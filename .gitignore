@@ -1,0 +1,12 @@
+#vscode
+
+.vscode
+
+#audio
+
+*.mp3
+
+#dart
+
+.dart_tool
+.packages
