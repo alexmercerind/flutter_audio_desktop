@@ -1,7 +1,7 @@
 # flutter_audio_desktop
 
-##### A simple yet functional 🎵️ audio library for Flutter Desktop.
-###### There is not any audio playback library for Flutter Desktop, so I made one myself.
+### A simple yet functional 🎵️ audio library for Flutter Desktop.
+#### There is not any audio playback library for Flutter Desktop, so I made one myself.
 
 Right as it is just a start, it supports MP3 playback. I'll try to increase the domain of support formats with time & plan is to provide metadata of a track aswell.
 
@@ -55,6 +55,6 @@ The library is only supported on x64 systems right now.
 
 ## :wrench: How It Works ?
 
-It simply uses dart::ffi for accessing Native C++ for playing audio. It uses the [BASS Audio Library](http://www.un4seen.com) under the hood. 
+One word, C++. It simply uses **dart::ffi** for accessing Native C++ for playing audio. It uses the [BASS Audio Library](http://www.un4seen.com) under the hood. 
 
 There is not any audio playback library for Flutter Desktop at the moment, so I decided to make one myself.
