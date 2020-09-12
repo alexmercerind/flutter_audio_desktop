@@ -3,11 +3,50 @@
 ### A simple yet functional 🎵️ audio library for Flutter Desktop.
 #### There is not any audio playback library for Flutter Desktop, so I made one myself.
 
-Right as it is just a start, it supports MP3 playback. I'll try to increase the domain of support formats with time & plan is to provide metadata of a track aswell.
+Right now, as it is just a start, it supports MP3 playback. I'll try to increase the domain of support formats with time & plan is to provide metadata of a track aswell.
 
-## :triangular_ruler: Code Example
 
-#### Usage in Dart
+## :triangular_ruler: Usage
+
+```dart
+import 'package:flutter_audio_desktop/flutter_audio_desktop.dart';
+
+void main() {
+  // Start AudioPlayer. Set debug: true for extra logs.
+  var audioPlayer = new AudioPlayer(debug: false);
+
+  // Load audio file.
+  audioPlayer.load('./music.mp3');
+
+  // Start playing loaded audio file.
+  audioPlayer.play();
+  print('Duration Of Track: ${audioPlayer.getDuration()}');
+
+  // Change playback volume.
+  audioPlayer.setVolume(0.5);
+  print('Changed volume to 50%.');
+
+  // Change playback position.
+  audioPlayer.setPosition(Duration(seconds: 10));
+  print('Position of playback after skipping 60 seconds: ${audioPlayer.getPosition()}');
+
+  Timer(Duration(seconds: 10), () {
+  
+    // Pause the playback.
+    audioPlayer.pause();
+    print('Playback of audio stopped after 10 seconds.');
+    
+  });
+}
+```
+
+
+## :heart: Like the library?
+
+Feel free to use in your Flutter Desktop app. Consider :star: starring the repository if you want to support the development & appreciate the effort.
+
+
+#### Running directly from repository
 
 - **Clone the repository**
 
@@ -23,38 +62,19 @@ cd flutter_audio_desktop
 dart example.dart
 ```
 
-## :ok_hand: Easy To Use
-
-```dart
-import 'flutter_audio_linux/flutter_audio_linux.dart';
-
-void main() {
-  var audioPlayer = new AudioPlayer(debug: false);
-
-  audioPlayer.load('./music.mp3');
-  audioPlayer.play();
-
-  Timer(Duration(hours: 1), () {});
-  //Keeping the Dart interpreter started while the music is playing. You don't need this in Flutter app.
-}
-```
-
-## :heart: Like the library?
-
-Feel free to use in your Flutter Desktop app. Consider :star: starring the repository if you want to support the development & appreciate the effort.
 
 ## :heavy_check_mark: Progress
 
 The library is only supported on x64 systems right now.
 
-|Platform|Status    |
-|--------|----------|
-|Linux   |Working   |
-|Windows |Not Tested|
-|MacOS   |Not Tested|
+|Platform|Status    |Remark     |
+|--------|----------|-----------|
+|Linux   |Working   |           |
+|Windows |Not Tested|Coming Soon|
+|MacOS   |Not Tested|           |
 
 ## :wrench: How It Works ?
 
-One word, C++. It simply uses **dart::ffi** for accessing Native C++ for playing audio. It uses the [BASS Audio Library](http://www.un4seen.com) under the hood. 
+One word, C++. I had experience with C++ & it simply uses [dart::ffi](https://dart.dev/guides/libraries/c-interop) for accessing Native C++ for playing audio. It uses the [BASS Audio Library](http://www.un4seen.com) under the hood. 
 
 There is not any audio playback library for Flutter Desktop at the moment, so I decided to make one myself.
