@@ -8,7 +8,7 @@ class AudioPlayer {
 
   /// Starts The Audio Service
   /// use debug: true for logging the information.
-  AudioPlayer({this.debug}) {
+  AudioPlayer({this.debug = false}) {
     if (this.debug) {
       audio.init(1);
     } else {

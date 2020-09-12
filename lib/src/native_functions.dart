@@ -1,3 +1,9 @@
+/*
+
+    http://github.com/alexmercerind/flutter_audio_desktop
+
+*/
+
 library native_functions;
 
 import 'dart:ffi' as ffi;
@@ -6,8 +12,15 @@ import 'dart:io' show Platform;
 import 'package:path/path.dart' as path;
 
 /// Linux System
-final dylib = ffi.DynamicLibrary.open(
-    path.join(path.dirname(Platform.script.path), 'lib', 'src', 'audio.so'));
+final dylib = ffi.DynamicLibrary.open(path.join(
+  '/' +
+      Platform.script.pathSegments
+          .sublist(0, Platform.script.pathSegments.length - 2)
+          .join('/'),
+  'lib',
+  'src',
+  'audio.so',
+));
 
 /// init
 typedef InitFunction = ffi.Void Function(ffi.Int32 debug);
