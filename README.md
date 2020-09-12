@@ -24,6 +24,9 @@ flutter run
 Feel free to open issue anytime.
 
 
+![screenshot](./screenshot.png)
+
+
 ## :triangular_ruler: Usage
 
 **For usage in your Flutter Desktop app, checkout [this](.example/lib/main.dart) simple implementation.**
