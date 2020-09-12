@@ -6,37 +6,54 @@
 Right now, as it is just a start, it supports MP3 playback. I'll try to increase the domain of support formats with time & plan is to provide metadata of a track aswell.
 
 
+## :ok_hand: Try Now (For Linux)
+
+
+```bash
+git clone http://github.com/alexmercerind/flutter_audio_desktop.git --depth=1
+
+cd flutter_audio_desktop
+
+flutter pub get
+
+cd example
+
+flutter run
+```
+
+Feel free to open issue anytime.
+
+
 ## :triangular_ruler: Usage
 
+**For usage in your Flutter Desktop app, checkout [this](.example/lib/main.dart) simple implementation.**
+
+##### Easy To Use
+
 ```dart
-import 'package:flutter_audio_desktop/flutter_audio_desktop.dart';
+// Start AudioPlayer. Set debug: true for extra logs.
+var audioPlayer = new AudioPlayer(debug: false);
 
-void main() {
-  // Start AudioPlayer. Set debug: true for extra logs.
-  var audioPlayer = new AudioPlayer(debug: false);
+// Load audio file.
+audioPlayer.load('./music.mp3');
 
-  // Load audio file.
-  audioPlayer.load('./music.mp3');
+// Start playing loaded audio file.
+audioPlayer.play();
+print('Duration Of Track: ${audioPlayer.getDuration()}');
 
-  // Start playing loaded audio file.
-  audioPlayer.play();
-  print('Duration Of Track: ${audioPlayer.getDuration()}');
+// Change playback volume.
+audioPlayer.setVolume(0.5);
+print('Changed volume to 50%.');
 
-  // Change playback volume.
-  audioPlayer.setVolume(0.5);
-  print('Changed volume to 50%.');
+// Change playback position.
+audioPlayer.setPosition(Duration(seconds: 10));
+print('Position of playback after skipping 60 seconds: ${audioPlayer.getPosition()}');
 
-  // Change playback position.
-  audioPlayer.setPosition(Duration(seconds: 10));
-  print('Position of playback after skipping 60 seconds: ${audioPlayer.getPosition()}');
+Timer(Duration(seconds: 10), () {
 
-  Timer(Duration(seconds: 10), () {
-  
-    // Pause the playback.
-    audioPlayer.pause();
-    print('Playback of audio stopped after 10 seconds.');
-    
-  });
+// Pause the playback.
+audioPlayer.pause();
+print('Playback of audio stopped after 10 seconds.');
 }
 ```
 
@@ -44,23 +61,6 @@ void main() {
 ## :heart: Like the library?
 
 Feel free to use in your Flutter Desktop app. Consider :star: starring the repository if you want to support the development & appreciate the effort.
-
-
-#### Running directly from repository
-
-- **Clone the repository**
-
-```bash
-git clone http://github.com/alexmercerind/flutter_audio_desktop.git --depth=1
-
-cd flutter_audio_desktop
-```
-
-- **Run the example.dart in Dart interpreter**
-
-```bash
-dart example.dart
-```
 
 
 ## :heavy_check_mark: Progress
