@@ -15,7 +15,7 @@ class AudioPlayer {
   double volume = 1.0;
 
   /**
-   * ### AudioPlayer State
+   * ## AudioPlayer State
    * 
    * `0` : `Loading  State`
    * 
@@ -28,7 +28,7 @@ class AudioPlayer {
   List<bool> _playerState = [false, false, false, true];
 
   /**
-   * ### Starting Audio Service
+   * ## Starting Audio Service
    * 
    *     AudioPlayer audioPlayer = new AudioPlayer();
    * 
@@ -45,13 +45,22 @@ class AudioPlayer {
   }
 
   /**
-   * ### Loading Audio File
+   * ## Loading Audio File
    * 
    *     await audioPlayer.load('/home/alexmercerind/music.mp3');
    * 
-   *  Results in `true`, if the audio file is successfully loaded.
+   *  Results in `Future<true>`, if the audio file is successfully loaded.
    * 
-   *  Returns `false`, if the audio file does not exists.
+   *  Returns `Future<false>`, if the audio file does not exists.
+   * 
+   * NOTE: When providing path as a paramter, it is recommended to use
+   * single forward slashes or double forward slashes only.
+   * 
+   * Example of valid paths:
+   * 
+   * 1) `"D:\\alexmercerind\\Music\\music.mp3"`
+   * 
+   * 2) `"D:/alexmercerind/Music/music.mp3"`
    */
   Future<bool> load(String fileLocation) async {
     File audioFile = File(fileLocation);
@@ -72,13 +81,13 @@ class AudioPlayer {
   }
 
   /**
-   * ### Playing Loading Audio File
+   * ## Playing Loaded Audio File
    * 
    *     await audioPlayer.play();
    * 
-   *  Starts playing the loaded audio file & results in `true`.
+   *  Starts playing the loaded audio file & results in `Future<true>`.
    * 
-   *  Returns `false` if no file is loaded or a file is already playing.
+   *  Returns `Future<false>` if no file is loaded or a file is already playing.
    */
   Future<bool> play() async {
     bool success;
@@ -97,13 +106,13 @@ class AudioPlayer {
   }
 
   /**
-   * ### Pausing Loading Audio File
+   * ## Pausing Loaded Audio File
    * 
    *     await audioPlayer.pause();
    * 
-   *  Pauses the loaded audio file & results in `true`.
+   *  Pauses the loaded audio file & results in `Future<true>`.
    * 
-   *  Returns `false` if no file is loaded or playback is already paused.
+   *  Returns `Future<false>` if no file is loaded or playback is already paused.
    */
   Future<bool> pause() async {
     if (this._playerState[2]) {
@@ -120,13 +129,13 @@ class AudioPlayer {
   }
 
   /**
-   * ### Unloading Audio File
+   * ## Unloading Audio File
    * 
    *     await audioPlayer.pause();
    * 
-   *  Unloads loaded audio file & results in `true`.
+   *  Unloads loaded audio file & results in `Future<true>`.
    * 
-   *  Returns `false` if no file is loaded or a playback already stopped.
+   *  Returns `Future<false>` if no file is loaded or a playback already stopped.
    * 
    *  Once this method is called, you must call [load] once again.
    * 
@@ -148,13 +157,13 @@ class AudioPlayer {
   }
 
   /**
-   * ### Getting Audio File Duration
+   * ## Getting Audio File Duration
    * 
    *     Duration audioDuration = await audioPlayer.getDuration();
    * 
-   *  Results in `Duration`.
+   *  Results in `Future<Duration>`.
    * 
-   *  Returns `false` if no file is loaded.
+   *  Returns `Future<false>` if no file is loaded.
    */
   Future<dynamic> getDuration() async {
     if (this._playerState[0]) {
@@ -165,13 +174,13 @@ class AudioPlayer {
   }
 
   /**
-   * ### Getting Audio Playback Position
+   * ## Getting Audio Playback Position
    * 
    *     Duration audioPosition = await audioPlayer.getPosition();
    * 
-   *  Results in `Duration`.
+   *  Results in `Future<Duration>`.
    * 
-   *  Returns `false` if no file is loaded.
+   *  Returns `Future<false>` if no file is loaded.
    */
   Future<dynamic> getPosition() async {
     if (this._playerState[0] &&
@@ -186,13 +195,13 @@ class AudioPlayer {
   }
 
   /**
-   * ### Setting Audio Playback Position
+   * ## Setting Audio Playback Position
    * 
    *     await audioPlayer.setPosition(Duration(seconds: 18));
    * 
-   *  Results in `true`.
+   *  Results in `Future<true>`.
    * 
-   *  Returns `false` if no file is loaded.
+   *  Returns `Future<false>` if no file is loaded.
    */
   Future<bool> setPosition(Duration duration) async {
     if (this._playerState[0]) {
@@ -204,7 +213,7 @@ class AudioPlayer {
   }
 
   /**
-   * ### Setting Audio Playback Volume
+   * ## Setting Audio Playback Volume
    * 
    *     audioPlayer.setVolume(0.25);
    * 
