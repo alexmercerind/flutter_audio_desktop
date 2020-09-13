@@ -26,31 +26,31 @@ final dylib = ffi.DynamicLibrary.open(path.join(
 typedef InitFunction = ffi.Void Function(ffi.Int32 debug);
 typedef Init = void Function(int debug);
 final Init init =
-    dylib.lookup<ffi.NativeFunction<InitFunction>>('init').asFunction();
+    dylib.lookup<ffi.NativeFunction<InitFunction>>('initPlayer').asFunction();
 
 /// load
 typedef LoadFunction = ffi.Void Function(ffi.Pointer<Utf8> fileName);
 typedef Load = void Function(ffi.Pointer<Utf8> fileName);
 final Load load =
-    dylib.lookup<ffi.NativeFunction<LoadFunction>>('load').asFunction();
+    dylib.lookup<ffi.NativeFunction<LoadFunction>>('loadPlayer').asFunction();
 
 /// play
 typedef PlayFunction = ffi.Void Function();
 typedef Play = void Function();
 final Play play =
-    dylib.lookup<ffi.NativeFunction<PlayFunction>>('play').asFunction();
+    dylib.lookup<ffi.NativeFunction<PlayFunction>>('playPlayer').asFunction();
 
 /// pause
 typedef PauseFunction = ffi.Void Function();
 typedef Pause = void Function();
 final Play pause =
-    dylib.lookup<ffi.NativeFunction<PauseFunction>>('pause').asFunction();
+    dylib.lookup<ffi.NativeFunction<PauseFunction>>('pausePlayer').asFunction();
 
 /// stop
 typedef StopFunction = ffi.Void Function();
 typedef Stop = void Function();
 final Stop stop =
-    dylib.lookup<ffi.NativeFunction<StopFunction>>('stop').asFunction();
+    dylib.lookup<ffi.NativeFunction<StopFunction>>('stopPlayer').asFunction();
 
 /// getDuration
 typedef GetDurationFunction = ffi.Int32 Function();
