@@ -1,6 +1,6 @@
 # flutter_audio_desktop
 
-### A simple yet functional :music_note: audio library for Flutter Desktop.
+### A simple yet functional :notes: audio library for Flutter Desktop.
 
 Right now, as it is just a start, it supports MP3 playback. I'll try to increase the domain of support formats with time & plan is to provide metadata of a track aswell.
 
