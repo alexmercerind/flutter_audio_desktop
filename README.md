@@ -68,9 +68,9 @@ The library is only supported on x64 systems right now.
 |Windows |Not Tested|Coming Soon|
 |MacOS   |Not Tested|           |
 
-## How It Works ?
+## :wrench: How It Works ?
 
-One word, C++. I had experience with C++ & it simply uses [dart::ffi](https://dart.dev/guides/libraries/c-interop) for accessing Native C++ for playing audio. It uses the Changed native code to use [miniaudio](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
+One word, C++. I had bit of experience with C++ & it simply uses [dart::ffi](https://dart.dev/guides/libraries/c-interop) for accessing Native C++ for playing audio. It uses the native code to use [miniaudio](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
 
 I wrote [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/lib/src/AudioPlayer.hpp) simple wrapper around his library to get this working.
 
