@@ -1,7 +1,6 @@
 name: flutter_audio_desktop
 description: A simple yet functional audio library for Flutter Desktop.
-version: 0.0.1
-author: alexmercerind
+version: 0.0.3
 homepage: https://github.com/alexmercerind/flutter_audio_desktop
 repository: https://github.com/alexmercerind/flutter_audio_desktop
 documentation: https://github.com/alexmercerind/flutter_audio_desktop/README.md
@@ -13,8 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  path: any
-  ffi: any
+  path: ^1.7.0
+  ffi: ^0.1.3
 
 dev_dependencies:
   flutter_test:
