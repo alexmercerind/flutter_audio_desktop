@@ -1,3 +1,13 @@
+## 0.0.3
+
+**First Public Release**
+
+- Added docstrings.
+- Improved dart usage.
+- Fixed wrong sample rate.
+- AudioPlayer::load now checks for file existence.
+
+
 ## 0.0.2
 
 **Now Fully Open Source**
