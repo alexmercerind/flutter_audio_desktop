@@ -9,46 +9,33 @@ class Player extends StatefulWidget {
 }
 
 class PlayerState extends State<Player> {
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  String textFieldValue = '';
-  String fileLocation = '';
-  bool isPlaying = false;
-  double volumeValue = 1.0;
-
   /// Simple player implementation. Setting debug: true for extra logging.
   AudioPlayer audioPlayer = new AudioPlayer(debug: true);
+
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  String _textFieldValue = '';
 
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         tooltip: 'Play loaded audio',
-        child: this.isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
+        child:
+            audioPlayer.isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
         onPressed: () {
-          if (this.fileLocation == '') {
+          this.setState(() {});
+          if (!audioPlayer.isLoaded) {
             this._scaffoldKey.currentState.showSnackBar(SnackBar(
                   content: Text('Load audio first.'),
                   behavior: SnackBarBehavior.floating,
                 ));
           } else {
-            this.setState(() {
-              if (!this.isPlaying) {
-                /// Playing loaded audio file.
-                this.audioPlayer.play();
-                this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                      content: Text('Playing...'),
-                      behavior: SnackBarBehavior.floating,
-                    ));
-                isPlaying = true;
-              } else if (this.isPlaying) {
-                /// Pausing playback of loaded audio file.
-                this.audioPlayer.pause();
-                this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                      content: Text('Paused.'),
-                      behavior: SnackBarBehavior.floating,
-                    ));
-                isPlaying = false;
-              }
-            });
+            if (audioPlayer.isPaused) {
+              /// Playing loaded audio file.
+              this.audioPlayer.play();
+            } else if (audioPlayer.isPlaying) {
+              /// Pausing playback of loaded audio file.
+              this.audioPlayer.pause();
+            }
           }
         },
       ),
@@ -70,10 +57,7 @@ class PlayerState extends State<Player> {
                     width: 480,
                     child: TextField(
                       onChanged: (String value) {
-                        this.textFieldValue = value;
-                      },
-                      onEditingComplete: () {
-                        this.fileLocation = this.textFieldValue;
+                        this._textFieldValue = value;
                       },
                       decoration: InputDecoration(
                         hintText: 'Enter path to an audio file...',
@@ -92,23 +76,17 @@ class PlayerState extends State<Player> {
                       size: 28,
                     ),
                     tooltip: 'Load Audio',
-                    onPressed: () {
-                      this.fileLocation = this.textFieldValue;
-                      if (File(this.fileLocation).existsSync()) {
+                    onPressed: () async {
+                      bool result =
+                          await audioPlayer.load(this._textFieldValue);
+                      if (result) {
                         this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                              content: Text(
-                                  'Audio file is loaded. Play using FAB below.'),
-                              behavior: SnackBarBehavior.floating,
-                            ));
+                            content: Text(
+                                'Audio file is loaded. Press FAB to play.')));
                       } else {
                         this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                              content: Text('Audio file does not exist.'),
-                              behavior: SnackBarBehavior.floating,
-                            ));
-                      }
-                      if (this.fileLocation != '') {
-                        /// Loading an audio file.
-                        audioPlayer.load(fileLocation);
+                            content:
+                                Text('Audio file is could not be loaded.')));
                       }
                     },
                   ),
@@ -127,13 +105,10 @@ class PlayerState extends State<Player> {
                     ),
                     Slider(
                         divisions: 10,
-                        value: this.volumeValue,
+                        value: audioPlayer.volume,
                         onChanged: (value) {
                           this.setState(() {
-                            this.volumeValue = value;
-
-                            /// Changing playback volume.
-                            this.audioPlayer.setVolume(this.volumeValue);
+                            this.audioPlayer.setVolume(value);
                           });
                         }),
                   ],
