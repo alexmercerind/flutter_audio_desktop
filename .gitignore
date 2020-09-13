@@ -10,3 +10,7 @@
 
 .dart_tool
 .packages
+
+#miniaudio
+
+lib/src/miniaudio.h
