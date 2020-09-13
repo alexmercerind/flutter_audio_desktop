@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_desktop/flutter_audio_desktop.dart';
 
@@ -24,10 +22,7 @@ class PlayerState extends State<Player> {
         onPressed: () {
           this.setState(() {});
           if (!audioPlayer.isLoaded) {
-            this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                  content: Text('Load audio first.'),
-                  behavior: SnackBarBehavior.floating,
-                ));
+            this._scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Load audio first.'),));
           } else {
             if (audioPlayer.isPaused) {
               /// Playing loaded audio file.
@@ -49,7 +44,7 @@ class PlayerState extends State<Player> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.all(64),
+              padding: EdgeInsets.all(32),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -80,13 +75,9 @@ class PlayerState extends State<Player> {
                       bool result =
                           await audioPlayer.load(this._textFieldValue);
                       if (result) {
-                        this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                            content: Text(
-                                'Audio file is loaded. Press FAB to play.')));
+                        this._scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Audio file is loaded. Press FAB to play.')));
                       } else {
-                        this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                            content:
-                                Text('Audio file is could not be loaded.')));
+                        this._scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Audio file is could not be loaded.')));
                       }
                     },
                   ),
@@ -124,14 +115,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: Player(),
     );
   }
 }
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
