@@ -14,6 +14,8 @@ flutter pub get
 
 cd example
 
+flutter create .
+
 flutter run
 ```
 
@@ -41,7 +43,7 @@ print('Changed volume to 50%.');
 
 // Change playback position.
 audioPlayer.setPosition(Duration(seconds: 10));
-print('Position of playback after skipping 60 seconds: ${audioPlayer.getPosition()}');
+print('Position of playback after skipping 10 seconds: ${audioPlayer.getPosition()}');
 
 Timer(Duration(seconds: 10), () {
 
@@ -56,17 +58,19 @@ Timer(Duration(seconds: 10), () {
 
 Feel free to use in your Flutter Desktop app. Consider :star: starring the repository if you want to show YOUR SUPPORT to the development & appreciate the effort.
 
-![flutter_audio_desktop](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/screenshot.png)
+|Windows|Linux
+|-|-|
+|![flutter_audio_desktop on Windows](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/windows.png?raw=true)|![flutter_audio_desktop on Linux](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/linux.png?raw=true)|
 
 ## :heavy_check_mark: Progress
 
 The library is only supported on x64 systems right now.
 
-|Platform|Status    |Remark     |
-|--------|----------|-----------|
-|Linux   |Working   |           |
-|Windows |Not Tested|Coming Soon|
-|MacOS   |Not Tested|           |
+|Platform|Status     |
+|--------|-----------|
+|Linux   |Working    |
+|Windows |Working    |
+|MacOS   |Not Working|
 
 ## :wrench: How It Works ?
 
