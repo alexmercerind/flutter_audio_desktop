@@ -22,7 +22,7 @@ Feel free to open issue anytime.
 
 ## :triangular_ruler: Usage
 
-**For usage in your Flutter Desktop app, checkout [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/lib/src/main.dart) simple implementation.**
+**For usage in your Flutter Desktop app, checkout [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) simple implementation.**
 
 ```dart
 // Start AudioPlayer.
