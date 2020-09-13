@@ -22,7 +22,7 @@ class AudioPlayerInternal {
 
     ma_format sampleFormat = ma_format_f32;
     int channelCount = 2;
-    int sampleRate = 4800;
+    int sampleRate = 48000;
 
     ma_device device;
     ma_device_config deviceConfig;
