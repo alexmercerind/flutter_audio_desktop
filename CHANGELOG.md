@@ -1,3 +1,10 @@
+## 0.0.2
+
+**Now Fully Open Source**
+
+Changed native code to use [miniaudio](https://github.com/mackron/miniaudio)
+
+
 ## 0.0.1
 
 **Initial Release**

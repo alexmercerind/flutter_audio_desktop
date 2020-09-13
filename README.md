@@ -54,9 +54,9 @@ print('Position of playback after skipping 60 seconds: ${audioPlayer.getPosition
 
 Timer(Duration(seconds: 10), () {
 
-// Pause the playback.
-audioPlayer.pause();
-print('Playback of audio stopped after 10 seconds.');
+    // Pause the playback.
+    audioPlayer.pause();
+    print('Playback of audio stopped after 10 seconds.');
 }
 ```
 
@@ -78,6 +78,10 @@ The library is only supported on x64 systems right now.
 
 ## :wrench: How It Works ?
 
-One word, C++. I had experience with C++ & it simply uses [dart::ffi](https://dart.dev/guides/libraries/c-interop) for accessing Native C++ for playing audio. It uses the [BASS Audio Library](http://www.un4seen.com) under the hood. 
+One word, C++. I had experience with C++ & it simply uses [dart::ffi](https://dart.dev/guides/libraries/c-interop) for accessing Native C++ for playing audio. It uses the Changed native code to use [miniaudio](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
 
-There is not any audio playback library for Flutter Desktop at the moment, so I decided to make one myself.
+I wrote [this](./lib/src/AudioPlayer.hpp) simple wrapper around his library to get this working.
+
+There is not any audio playback library for Flutter Desktop at the moment, so I decided to write one myself.
+
+###### :love_letter: Thanks a lot to [David Reid](https://github.com/mackron).
