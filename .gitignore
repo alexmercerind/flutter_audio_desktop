@@ -11,6 +11,11 @@
 .dart_tool
 .packages
 
-#miniaudio
+#flutter
 
-lib/src/miniaudio.h
+.flutter-plugins
+.flutter-plugins-dependencies
+
+#miniaudio. Get it from here: https://github.com/mackron/miniaudio if you wish to test yourself.
+
+linux/include/com.alexmercerind/miniaudio.h
