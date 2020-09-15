@@ -1,3 +1,10 @@
+## 0.0.4
+
+**Final Improvements**
+
+- Now plugin uses MethodChannel instead of dart:ffi for calling native methods.
+- Any additional setup is not required anymore.
+
 ## 0.0.3
 
 **First Public Release**
