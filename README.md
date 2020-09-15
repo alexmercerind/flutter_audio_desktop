@@ -66,7 +66,7 @@ The library is only supported on Linux right now.
 
 ## :wrench: How It Works ?
 
-One word, C++. I calls native methods using dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
+One word, C++. It calls native methods using dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
 
 I wrote [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/linux/include/AudioPlayer.hpp) simple wrapper in C++ around his library to get this working.
 
