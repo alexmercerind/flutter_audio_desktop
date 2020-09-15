@@ -72,8 +72,8 @@ class PlayerState extends State<Player> {
                     ),
                     tooltip: 'Load Audio',
                     onPressed: () async {
-                      bool result =
-                          await audioPlayer.load(this._textFieldValue);
+                      /// Loading an audio file into the player.
+                      bool result = await audioPlayer.load(this._textFieldValue);
                       if (result) {
                         this._scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Audio file is loaded. Press FAB to play.')));
                       } else {
@@ -99,6 +99,7 @@ class PlayerState extends State<Player> {
                         value: audioPlayer.volume,
                         onChanged: (value) {
                           this.setState(() {
+                            /// Changing player volume.
                             this.audioPlayer.setVolume(value);
                           });
                         }),
