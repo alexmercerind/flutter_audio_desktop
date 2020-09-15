@@ -1,30 +1,13 @@
-# flutter_audio_desktop
+# [flutter_audio_desktop](https://github.com/alexmercerind/flutter_audio_desktop)
 
 ### A simple yet functional :notes: audio library for Flutter Desktop.
 
 Right now, as it is just a start, it supports MP3 playback. I'll try to increase the domain of support formats with time & plan is to provide metadata of a track aswell.
 
-
-```bash
-git clone http://github.com/alexmercerind/flutter_audio_desktop.git --depth=1
-
-cd flutter_audio_desktop
-
-flutter pub get
-
-cd example
-
-flutter create .
-
-flutter run
-```
-
 Feel free to open issue anytime.
 
 
 ## :triangular_ruler: Usage
-
-**For usage in your Flutter Desktop app, checkout [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) simple implementation.**
 
 ```dart
 // Start AudioPlayer.
@@ -53,30 +36,28 @@ Timer(Duration(seconds: 10), () {
 }
 ```
 
+You can see [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) simple example app, if you are confused with the usage.
+
 
 ## :heart: Like the library?
 
 Feel free to use in your Flutter Desktop app. Consider :star: starring the repository if you want to show YOUR SUPPORT to the development & appreciate the effort.
 
-|Windows|Linux
-|-|-|
-|![flutter_audio_desktop on Windows](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/windows.png?raw=true)|![flutter_audio_desktop on Linux](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/linux.png?raw=true)|
-
 ## :heavy_check_mark: Progress
 
-The library is only supported on x64 systems right now.
+The library is only supported on Linux right now.
 
 |Platform|Status     |
 |--------|-----------|
 |Linux   |Working    |
-|Windows |Working    |
+|Windows |Not Working|
 |MacOS   |Not Working|
 
 ## :wrench: How It Works ?
 
-One word, C++. I had bit of experience with C++ & it simply uses [dart::ffi](https://dart.dev/guides/libraries/c-interop) for accessing Native C++ for playing audio. It uses [miniaudio](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
+One word, C++. I calls native methods using dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
 
-I wrote [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/lib/src/AudioPlayer.hpp) simple wrapper in C++ around his library to get this working.
+I wrote [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/linux/include/AudioPlayer.hpp) simple wrapper in C++ around his library to get this working.
 
 There is not any audio playback library for Flutter Desktop at the moment, so I decided to write one myself.
 
