@@ -1,8 +1,11 @@
-#include "include/flutter_audio_desktop/flutter_audio_desktop_plugin.h"
+#include "include/com.alexmercerind/audio.cpp"
 
+
+#include "include/flutter_audio_desktop/flutter_audio_desktop_plugin.h"
 #include <flutter_linux/flutter_linux.h>
 #include <gtk/gtk.h>
 #include <sys/utsname.h>
+
 
 #define FLUTTER_AUDIO_DESKTOP_PLUGIN(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), flutter_audio_desktop_plugin_get_type(), \
@@ -14,7 +17,6 @@ struct _FlutterAudioDesktopPlugin {
 
 G_DEFINE_TYPE(FlutterAudioDesktopPlugin, flutter_audio_desktop_plugin, g_object_get_type())
 
-// Called when a method call is received from Flutter.
 static void flutter_audio_desktop_plugin_handle_method_call(
     FlutterAudioDesktopPlugin* self,
     FlMethodCall* method_call) {
@@ -22,16 +24,78 @@ static void flutter_audio_desktop_plugin_handle_method_call(
 
   const gchar* method = fl_method_call_get_name(method_call);
 
-  if (strcmp(method, "getPlatformVersion") == 0) {
-    struct utsname uname_data = {};
-    uname(&uname_data);
-    g_autofree gchar *version = g_strdup_printf("Linux %s", uname_data.version);
-    g_autoptr(FlValue) result = fl_value_new_string(version);
-    response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));
-  } else {
-    response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+
+  if (strcmp(method, "init") == 0) {
+    int debug = fl_value_get_int(fl_method_call_get_args(method_call));
+
+    Audio::initPlayer(debug);
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
+  else if (strcmp(method, "load") == 0) {
+    const gchar* fileName = fl_value_get_string(fl_method_call_get_args(method_call));
+
+    Audio::loadPlayer(fileName);
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  }
+
+  else if (strcmp(method, "play") == 0) {
+    Audio::playPlayer();
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  }
+  
+  else if (strcmp(method, "pause") == 0) {
+    Audio::pausePlayer();
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  }
+
+  else if (strcmp(method, "stop") == 0) {
+    Audio::stopPlayer();
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  }
+
+  else if (strcmp(method, "getDuration") == 0) {
+    int playerDuration = Audio::getDuration();
+
+    g_autoptr(FlValue) playerDurationResponse = fl_value_new_int(playerDuration);
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(playerDurationResponse));
+  }
+
+  else if (strcmp(method, "getPosition") == 0) {
+    int playerPostion = Audio::getPosition();
+
+    g_autoptr(FlValue) playerPostionResponse = fl_value_new_int(playerPostion);
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(playerPostionResponse));
+  }
+
+  else if (strcmp(method, "setPosition") == 0) {
+
+    int timeMilliseconds = fl_value_get_int(fl_method_call_get_args(method_call));
+
+    Audio::setPosition(timeMilliseconds);
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  }
+
+  else if (strcmp(method, "setVolume") == 0) {
+    float volume = fl_value_get_float(fl_method_call_get_args(method_call));
+
+    Audio::setVolume(volume);
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  }
+  
+  
+  else {
+    response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  }
   fl_method_call_respond(method_call, response, nullptr);
 }
 
