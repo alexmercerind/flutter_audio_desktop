@@ -1,3 +1,15 @@
+# 0.0.6
+
+**Microsoft Windows Support**
+
+- Plugin is now capable of playing audio files on Windows.
+
+# 0.0.5
+
+**A Little Fix**
+
+- pub package now has miniaudio in it.
+
 ## 0.0.4
 
 **Final Improvements**
@@ -12,7 +24,7 @@
 - Added docstrings.
 - Improved dart usage.
 - Fixed wrong sample rate.
-- AudioPlayer::load now checks for file existence.
+- Now Dart code is asynchronous.
 
 
 ## 0.0.2

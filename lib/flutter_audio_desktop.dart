@@ -1,15 +1,13 @@
 /* http://github.com/alexmercerind/flutter_audio_desktop */
 
 library flutter_audio_desktop;
+
 import 'package:flutter/services.dart';
 import 'dart:io';
 
-
 final MethodChannel _channel = MethodChannel('flutter_audio_desktop');
 
-
 class AudioPlayer {
-  
   final bool debug;
   bool isLoaded = false;
   bool isPlaying = false;
