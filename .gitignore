@@ -16,6 +16,6 @@
 .flutter-plugins
 .flutter-plugins-dependencies
 
-#miniaudio. Get it from here: https://github.com/mackron/miniaudio if you wish to test yourself.
+#miniaudio. https://github.com/mackron/miniaudio
 
-linux/include/com.alexmercerind/miniaudio.h
+audioplayer/miniaudio.h
