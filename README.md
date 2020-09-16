@@ -29,6 +29,8 @@ audioPlayer.load('/home/alexmercerind/music.mp3');
 
 // Start playing loaded audio file.
 audioPlayer.play();
+
+// Get audio duration.
 print('Duration Of Track: ${audioPlayer.getDuration()}');
 
 // Change playback volume.
@@ -37,6 +39,8 @@ print('Changed volume to 50%.');
 
 // Change playback position.
 audioPlayer.setPosition(Duration(seconds: 10));
+
+// Get playback position.
 print('Position of playback after skipping 10 seconds: ${audioPlayer.getPosition()}');
 
 Timer(Duration(seconds: 10), () {
@@ -56,19 +60,19 @@ Feel free to use in your Flutter Desktop app. Consider :star: starring the repos
 
 ## :heavy_check_mark: Progress
 
-The library is only supported on Linux right now.
+The library is supported on Microsoft Windows & Linux.
 
-|Platform|Status     |
-|--------|-----------|
-|Linux   |Working    |
-|Windows |Not Working|
-|MacOS   |Not Working|
+|Platform            |Status     |
+|--------------------|-----------|
+|Microsoft Windows   |Working    |
+|Linux               |Working    |
+|MacOS               |Not Working|
 
 ## :wrench: How It Works ?
 
 One word, C++. It calls native methods using dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
 
-I wrote [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/linux/include/com.alexmercerind/AudioPlayer.hpp) simple wrapper in C++ around his library to get this working.
+I wrote [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/audioplayer/audioplayer.hpp) simple wrapper in C++ around his library to get this working.
 
 There is not any audio playback library for Flutter Desktop at the moment, so I decided to write one myself.
 
