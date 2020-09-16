@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 set(PROJECT_NAME "flutter_audio_desktop")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 set(PLUGIN_NAME "${PROJECT_NAME}_plugin")
 
 add_library(${PLUGIN_NAME} SHARED
-  "${PLUGIN_NAME}.cc"
+  "${PLUGIN_NAME}.cpp"
 )
 apply_standard_settings(${PLUGIN_NAME})
 set_target_properties(${PLUGIN_NAME} PROPERTIES
@@ -15,8 +15,7 @@ list(APPEND includePath "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_S
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "$<BUILD_INTERFACE:${includePath}>"
 )
-target_link_libraries(${PLUGIN_NAME} PRIVATE flutter)
-target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
+target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(flutter_audio_desktop_bundled_libraries
