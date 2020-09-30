@@ -9,6 +9,10 @@ namespace Audio {
         audioPlayer = new AudioPlayer(static_cast<bool>(debug));
     }
 
+    void setDevice(int deviceIndex) {
+        audioPlayer->setDevice(deviceIndex);
+    }
+
     void loadPlayer(const char* fileLocation) {
         audioPlayer->load(fileLocation);
     }

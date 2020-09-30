@@ -62,6 +62,14 @@ void FlutterAudioDesktopPlugin::HandleMethodCall(
     result->Success(flutter::EncodableValue(nullptr));
   }
 
+  else if (method_call.method_name() == "setDevice") {
+    int deviceIndex = std::get<int>(*method_call.arguments());
+
+    Audio::setDevice(deviceIndex);
+
+    result->Success(flutter::EncodableValue(nullptr));
+  }
+
   else if (method_call.method_name() == "load") {
     std::string fileName = std::get<std::string>(*method_call.arguments());
     

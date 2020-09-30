@@ -1,10 +1,16 @@
-# 0.0.6
+## 0.0.7
+
+**Initial Playback Device Changing Support**
+
+- Added setDevice method.
+
+## 0.0.6
 
 **Microsoft Windows Support**
 
 - Plugin is now capable of playing audio files on Windows.
 
-# 0.0.5
+## 0.0.5
 
 **A Little Fix**
 

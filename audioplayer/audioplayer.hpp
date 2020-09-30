@@ -23,10 +23,13 @@ class AudioPlayerInternal {
     ma_format sampleFormat = ma_format_f32;
     int channelCount = 2;
     int sampleRate = 48000;
+    int deviceIndex = 0;
 
     ma_device device;
     ma_device_config deviceConfig;
     ma_decoder decoder;
+    ma_device_info* pPlaybackDeviceInfos;
+    ma_uint32 playbackDeviceCount;
     
     bool debug;
     int audioDurationMilliseconds;
@@ -35,14 +38,12 @@ class AudioPlayerInternal {
         ma_context context;
         if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS) {
         }
-        ma_device_info* pPlaybackDeviceInfos;
-        ma_uint32 playbackDeviceCount;
         ma_device_info* pCaptureDeviceInfos;
         ma_uint32 captureDeviceCount;
-        if (ma_context_get_devices(&context, &pPlaybackDeviceInfos, &playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount) != MA_SUCCESS) {
+        if (ma_context_get_devices(&context, &this->pPlaybackDeviceInfos, &this->playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount) != MA_SUCCESS) {
         }
-        for (ma_uint32 index = 0; index < playbackDeviceCount; index += 1) {
-            std::cout << index << " - " << pPlaybackDeviceInfos[index].name << std::endl;
+        for (ma_uint32 index = 0; index < this->playbackDeviceCount; index += 1) {
+            std::cout << index << " - " << this->pPlaybackDeviceInfos[index].name << std::endl;
         }
     }
 
@@ -55,7 +56,9 @@ class AudioPlayerInternal {
     }
 
     void initDevice() {
+        ma_device_id selectedDeviceId = this->pPlaybackDeviceInfos[this->deviceIndex].id;
         this->deviceConfig = ma_device_config_init(ma_device_type_playback);
+        this->deviceConfig.playback.pDeviceID = &selectedDeviceId;
         this->deviceConfig.playback.format   = this->decoder.outputFormat;
         this->deviceConfig.playback.channels = this->decoder.outputChannels;
         this->deviceConfig.sampleRate        = this->decoder.outputSampleRate;
@@ -77,6 +80,13 @@ class AudioPlayer: public AudioPlayerInternal {
     AudioPlayer(bool debug = false) {
         this->debug = debug;
         this->showDevices();
+    }
+
+    void setDevice(int index) {
+        this->deviceIndex = index;
+        if (this->debug) {
+            std::cout << "Selected Device: " << this->deviceIndex << " - " << this->pPlaybackDeviceInfos[deviceIndex].name << std::endl;
+        }
     }
 
     void load(const char* file) {

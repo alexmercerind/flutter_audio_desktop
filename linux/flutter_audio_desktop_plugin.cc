@@ -33,6 +33,14 @@ static void flutter_audio_desktop_plugin_handle_method_call(
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
+  if (strcmp(method, "setDevice") == 0) {
+    int deviceIndex = fl_value_get_int(fl_method_call_get_args(method_call));
+
+    Audio::setDevice(deviceIndex);
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  }
+
   else if (strcmp(method, "load") == 0) {
     const gchar* fileName = fl_value_get_string(fl_method_call_get_args(method_call));
 

@@ -8,10 +8,16 @@ class Player extends StatefulWidget {
 
 class PlayerState extends State<Player> {
   /// Simple player implementation. Setting debug: true for extra logging.
-  AudioPlayer audioPlayer = new AudioPlayer(debug: true);
+  AudioPlayer audioPlayer;
 
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String _textFieldValue = '';
+
+  @override
+  void initState() {
+    super.initState();
+    this.audioPlayer = new AudioPlayer(debug: true);
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +80,8 @@ class PlayerState extends State<Player> {
                     ),
                     tooltip: 'Load Audio',
                     onPressed: () async {
+                      /// Setting playback device manually (if you have more than one playback device).
+                      audioPlayer.setDevice(deviceIndex: 0);
                       /// Loading an audio file into the player.
                       bool result =
                           await audioPlayer.load(this._textFieldValue);

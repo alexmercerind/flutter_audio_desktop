@@ -31,6 +31,13 @@ class AudioPlayer {
     }
   }
 
+  /// ## Changing Playback Device
+  ///
+  ///     await audioPlayer.setDevice(0);
+  /// 
+  /// NOTE: This method must be called before [load] method.
+  void setDevice({int deviceIndex = 0}) => _channel.invokeMethod('setDevice', deviceIndex);
+
   /// ## Loading Audio File
   ///
   ///     await audioPlayer.load('/home/alexmercerind/music.mp3');
