@@ -2,7 +2,7 @@
 
 #### A simple yet functional :notes: audio library for Flutter Desktop.
 
-Right now, as it is just a start, it supports MP3 playback. I'll try to increase the domain of support formats with time & plan is to provide metadata of a track aswell.
+Right now, as it is just a start, it supports MP3, FLAC & WAV playback. I'll try to increase the domain of support formats with time & plan is to provide metadata of a track aswell.
 
 Feel free to open issue anytime.
 
@@ -14,7 +14,7 @@ Mention in your pubspec.yaml requirements:
 ```yaml
 dependencies:
   ...
-  flutter_audio_desktop: ^0.0.5
+  flutter_audio_desktop: ^0.0.7
 ```
 
 

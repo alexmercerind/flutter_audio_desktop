@@ -2,7 +2,7 @@
 
 **Initial Playback Device Changing Support**
 
-- Added setDevice method.
+- Added setDevice method to AudioPlayer class.
 
 ## 0.0.6
 
