@@ -12,127 +12,196 @@
 #include "../audioplayer/audio.cpp"
 #include <sstream>
 
-namespace {
+namespace
+{
 
-class FlutterAudioDesktopPlugin : public flutter::Plugin {
-public:
-  static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
+  class FlutterAudioDesktopPlugin : public flutter::Plugin
+  {
+  public:
+    static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
-  FlutterAudioDesktopPlugin();
+    FlutterAudioDesktopPlugin();
 
-  virtual ~FlutterAudioDesktopPlugin();
+    virtual ~FlutterAudioDesktopPlugin();
 
-private:
-  void HandleMethodCall(
+  private:
+    void HandleMethodCall(
+        const flutter::MethodCall<flutter::EncodableValue> &method_call,
+        std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+  };
+
+  void FlutterAudioDesktopPlugin::RegisterWithRegistrar(
+      flutter::PluginRegistrarWindows *registrar)
+  {
+    auto channel =
+        std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+            registrar->messenger(), "flutter_audio_desktop",
+            &flutter::StandardMethodCodec::GetInstance());
+
+    auto plugin = std::make_unique<FlutterAudioDesktopPlugin>();
+
+    channel->SetMethodCallHandler(
+        [plugin_pointer = plugin.get()](const auto &call, auto result) {
+          plugin_pointer->HandleMethodCall(call, std::move(result));
+        });
+
+    registrar->AddPlugin(std::move(plugin));
+  }
+
+  FlutterAudioDesktopPlugin::FlutterAudioDesktopPlugin() {}
+
+  FlutterAudioDesktopPlugin::~FlutterAudioDesktopPlugin() {}
+
+  void FlutterAudioDesktopPlugin::HandleMethodCall(
       const flutter::MethodCall<flutter::EncodableValue> &method_call,
-      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-};
+      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+  {
 
-void FlutterAudioDesktopPlugin::RegisterWithRegistrar(
-    flutter::PluginRegistrarWindows *registrar) {
-  auto channel =
-      std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-          registrar->messenger(), "flutter_audio_desktop",
-          &flutter::StandardMethodCodec::GetInstance());
+    if (method_call.method_name() == "init")
+    {
+      int debug = std::get<int>(*method_call.arguments());
 
-  auto plugin = std::make_unique<FlutterAudioDesktopPlugin>();
+      Audio::initPlayer(debug);
 
-  channel->SetMethodCallHandler(
-      [plugin_pointer = plugin.get()](const auto &call, auto result) {
-        plugin_pointer->HandleMethodCall(call, std::move(result));
-      });
+      result->Success(flutter::EncodableValue(nullptr));
+    }
 
-  registrar->AddPlugin(std::move(plugin));
-}
+    else if (method_call.method_name() == "setDevice")
+    {
+      int deviceIndex = std::get<int>(*method_call.arguments());
 
-FlutterAudioDesktopPlugin::FlutterAudioDesktopPlugin() {}
+      Audio::setDevice(deviceIndex);
 
-FlutterAudioDesktopPlugin::~FlutterAudioDesktopPlugin() {}
+      result->Success(flutter::EncodableValue(nullptr));
+    }
 
-void FlutterAudioDesktopPlugin::HandleMethodCall(
-    const flutter::MethodCall<flutter::EncodableValue> &method_call,
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  
+    else if (method_call.method_name() == "load")
+    {
+      std::string fileName = std::get<std::string>(*method_call.arguments());
 
-  if (method_call.method_name() == "init") {
-    int debug = std::get<int>(*method_call.arguments());
+      Audio::loadPlayer(fileName.c_str());
 
-    Audio::initPlayer(debug);
+      result->Success(flutter::EncodableValue(nullptr));
+    }
 
-    result->Success(flutter::EncodableValue(nullptr));
+    else if (method_call.method_name() == "play")
+    {
+      Audio::playPlayer();
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+    else if (method_call.method_name() == "loadSine")
+    {
+      double amplitude = 0;
+      double frequency = 0;
+      int waveType = 0;
+
+      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+
+      auto encodedAmplitude = arguments->find(flutter::EncodableValue("amplitude"));
+      if (encodedAmplitude != arguments->end())
+      {
+        amplitude = std::get<double>(encodedAmplitude->second);
+      }
+
+      auto encodedFrequency = arguments->find(flutter::EncodableValue("frequency"));
+      if (encodedFrequency != arguments->end())
+      {
+        frequency = std::get<double>(encodedFrequency->second);
+      }
+
+      auto encodedWaveType = arguments->find(flutter::EncodableValue("wave_type"));
+      if (encodedWaveType != arguments->end())
+      {
+        frequency = std::get<int>(encodedWaveType->second);
+      }
+
+      Audio::loadSine(amplitude, frequency, waveType);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+
+    else if (method_call.method_name() == "pause")
+    {
+      Audio::pausePlayer();
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+
+    else if (method_call.method_name() == "stop")
+    {
+      Audio::stopPlayer();
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+
+    else if (method_call.method_name() == "getDuration")
+    {
+      int playerDuration = Audio::getDuration();
+
+      result->Success(flutter::EncodableValue(playerDuration));
+    }
+
+    else if (method_call.method_name() == "getPosition")
+    {
+      int playerPosition = Audio::getPosition();
+
+      result->Success(flutter::EncodableValue(playerPosition));
+    }
+
+    else if (method_call.method_name() == "setPosition")
+    {
+      int timeMilliseconds = std::get<int>(*method_call.arguments());
+
+      Audio::setPosition(timeMilliseconds);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+
+    else if (method_call.method_name() == "setVolume")
+    {
+      double volume = std::get<double>(*method_call.arguments());
+
+      Audio::setVolume(volume);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+    else if (method_call.method_name() == "setWaveAmplitude")
+    {
+      double amplitude = std::get<double>(*method_call.arguments());
+
+      Audio::setWaveAmplitude(amplitude);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+    else if (method_call.method_name() == "setWaveFrequency")
+    {
+      double frequency = std::get<double>(*method_call.arguments());
+
+      Audio::setWaveFrequency(frequency);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+    else if (method_call.method_name() == "setWaveSampleRate")
+    {
+      int waveSampleRate = std::get<int>(*method_call.arguments());
+
+      Audio::setWaveSampleRate(waveSampleRate);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+
+    else
+    {
+      result->NotImplemented();
+    }
   }
 
-  else if (method_call.method_name() == "setDevice") {
-    int deviceIndex = std::get<int>(*method_call.arguments());
-
-    Audio::setDevice(deviceIndex);
-
-    result->Success(flutter::EncodableValue(nullptr));
-  }
-
-  else if (method_call.method_name() == "load") {
-    std::string fileName = std::get<std::string>(*method_call.arguments());
-    
-    Audio::loadPlayer(fileName.c_str());
-    
-    result->Success(flutter::EncodableValue(nullptr));
-  }
-
-  else if (method_call.method_name() == "play") {
-    Audio::playPlayer();
-
-    result->Success(flutter::EncodableValue(nullptr));
-  }
-
-  else if (method_call.method_name() == "pause") {
-    Audio::pausePlayer();
-    
-    result->Success(flutter::EncodableValue(nullptr));
-  }
-
-  else if (method_call.method_name() == "stop") {
-    Audio::stopPlayer();
-
-    result->Success(flutter::EncodableValue(nullptr));
-  }
-
-  else if (method_call.method_name() == "getDuration") {
-    int playerDuration = Audio::getDuration();
-    
-    result->Success(flutter::EncodableValue(playerDuration));
-  }
-
-  else if (method_call.method_name() == "getPosition") {
-    int playerPosition = Audio::getPosition();
-
-    result->Success(flutter::EncodableValue(playerPosition));
-  }
-
-  else if (method_call.method_name() == "setPosition") {
-    int timeMilliseconds = std::get<int>(*method_call.arguments());
-
-    Audio::setPosition(timeMilliseconds);
-
-    result->Success(flutter::EncodableValue(nullptr));
-  }
-
-  else if (method_call.method_name() == "setVolume") {
-    double volume = std::get<double>(*method_call.arguments());
-
-    Audio::setVolume(volume);
-
-    result->Success(flutter::EncodableValue(nullptr));
-  }
-
-  else {
-    result->NotImplemented();
-  }
-}
-
-}
+} // namespace
 
 void FlutterAudioDesktopPluginRegisterWithRegistrar(
-    FlutterDesktopPluginRegistrarRef registrar) {
+    FlutterDesktopPluginRegistrarRef registrar)
+{
   FlutterAudioDesktopPlugin::RegisterWithRegistrar(
       flutter::PluginRegistrarManager::GetInstance()
           ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));

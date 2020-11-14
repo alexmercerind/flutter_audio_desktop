@@ -2,55 +2,88 @@
 
 #include "audioplayer.hpp"
 
-namespace Audio {
-    AudioPlayer* audioPlayer;
+namespace Audio
+{
+    AudioPlayer *audioPlayer;
 
-    void initPlayer(int debug) {
+    void initPlayer(int debug)
+    {
         audioPlayer = new AudioPlayer(static_cast<bool>(debug));
     }
 
-    void setDevice(int deviceIndex) {
+    void setDevice(int deviceIndex)
+    {
         audioPlayer->setDevice(deviceIndex);
     }
 
-    void loadPlayer(const char* fileLocation) {
+    void loadPlayer(const char *fileLocation)
+    {
         audioPlayer->load(fileLocation);
     }
 
-    void playPlayer() {
+    void playPlayer()
+    {
         audioPlayer->play();
     }
 
-    void pausePlayer() {
+    void pausePlayer()
+    {
         audioPlayer->pause();
     }
 
-    void stopPlayer() {
+    void stopPlayer()
+    {
         audioPlayer->stop();
     }
 
-    int getDuration() {
+    int getDuration()
+    {
         return audioPlayer->getDuration();
     }
 
-    int getPosition() {
+    int getPosition()
+    {
         return audioPlayer->getPosition();
     }
 
-    void setPosition(int timeMilliseconds) {
+    void setPosition(int timeMilliseconds)
+    {
         audioPlayer->setPosition(timeMilliseconds);
     }
 
-    void setVolume(double volume) {
+    void setVolume(double volume)
+    {
         audioPlayer->setVolume(volume);
     }
 
-    float getVolume() {
+    void setWaveFrequency(double frequency)
+    {
+        audioPlayer->setWaveFrequency(frequency);
+    }
+
+    void setWaveAmplitude(double amplitude)
+    {
+        audioPlayer->setWaveAmplitude(amplitude);
+    }
+
+    void setWaveSampleRate(int sampleRate)
+    {
+        audioPlayer->setWaveSampleRate(sampleRate);
+    }
+
+    void loadSine(double amplitude, double frequency, int waveType)
+    {
+        audioPlayer->loadSine(amplitude, frequency, waveType);
+    }
+
+    float getVolume()
+    {
         return audioPlayer->getVolume();
     }
-}
+} // namespace Audio
 
-int main(int argc, const char** argv) {
+int main(int argc, const char **argv)
+{
     AudioPlayer audioPlayer(true);
     audioPlayer.load(argv[2]);
     audioPlayer.play();

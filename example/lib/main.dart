@@ -51,6 +51,20 @@ class PlayerState extends State<Player> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              Text("Load Wave"),
+              IconButton(
+                color: Colors.blue,
+                icon: Icon(
+                  Icons.check,
+                  size: 28,
+                ),
+                onPressed: () async {
+                  audioPlayer.setDevice(deviceIndex: 2);
+                  audioPlayer.loadSine(0.2, 400, 0);
+                },
+              ),
+            ]),
             Padding(
               padding: EdgeInsets.all(32),
               child: Row(
@@ -81,7 +95,8 @@ class PlayerState extends State<Player> {
                     tooltip: 'Load Audio',
                     onPressed: () async {
                       /// Setting playback device manually (if you have more than one playback device).
-                      audioPlayer.setDevice(deviceIndex: 0);
+                      audioPlayer.setDevice(deviceIndex: 2);
+
                       /// Loading an audio file into the player.
                       bool result =
                           await audioPlayer.load(this._textFieldValue);
@@ -100,7 +115,7 @@ class PlayerState extends State<Player> {
               ),
             ),
             Padding(
-                padding: EdgeInsets.all(64),
+                padding: EdgeInsets.all(24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -116,6 +131,63 @@ class PlayerState extends State<Player> {
                           this.setState(() {
                             /// Changing player volume.
                             this.audioPlayer.setVolume(value);
+                          });
+                        }),
+                  ],
+                )),
+            Padding(
+                padding: EdgeInsets.all(24), child: Text("Wave Settings: ")),
+            Padding(
+                padding: EdgeInsets.all(24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.multiline_chart,
+                      size: 36,
+                      color: Colors.blue,
+                    ),
+                    Slider(
+                        divisions: 10,
+                        value: audioPlayer.waveAmplitude,
+                        min: 0.0,
+                        max: 1,
+                        onChanged: (value) {
+                          this.setState(() {
+                            /// Changing player volume.
+                            this.audioPlayer.setWaveAmplitude(value);
+                          });
+                        }),
+                    Icon(
+                      Icons.radio,
+                      size: 36,
+                      color: Colors.blue,
+                    ),
+                    Slider(
+                        divisions: 100,
+                        value: audioPlayer.waveFrequency,
+                        min: 0,
+                        max: 1000,
+                        onChanged: (value) {
+                          this.setState(() {
+                            /// Changing player volume.
+                            this.audioPlayer.setWaveFrequency(value);
+                          });
+                        }),
+                    Icon(
+                      Icons.timelapse,
+                      size: 36,
+                      color: Colors.blue,
+                    ),
+                    Slider(
+                        divisions: 1000,
+                        value: audioPlayer.waveSampleRate.toDouble(),
+                        min: 1000,
+                        max: 100000,
+                        onChanged: (value) {
+                          this.setState(() {
+                            /// Changing player volume.
+                            this.audioPlayer.setWaveSampleRate(value.toInt());
                           });
                         }),
                   ],
