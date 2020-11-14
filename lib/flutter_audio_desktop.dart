@@ -114,7 +114,7 @@ class AudioPlayer {
         await _channel.invokeMethod('loadWave', {
           'amplitude': amplitude,
           'frequency': frequency,
-          'waveType': waveType
+          'wave_type': waveType
         });
         success = true;
       } else {

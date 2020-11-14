@@ -55,7 +55,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   {
     const float amplitude = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("amplitude")));
     const float frequency = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("frequency")));
-    const int waveType = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("waveType")));
+    const int waveType = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("wave_type")));
     Audio::loadWave(amplitude, frequency, waveType);
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
