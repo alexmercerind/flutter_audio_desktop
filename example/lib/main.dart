@@ -61,7 +61,7 @@ class PlayerState extends State<Player> {
                 ),
                 onPressed: () async {
                   audioPlayer.setDevice(deviceIndex: 2);
-                  audioPlayer.loadSine(0.2, 400, 0);
+                  audioPlayer.loadWave(0.2, 400, 0);
                 },
               ),
             ]),

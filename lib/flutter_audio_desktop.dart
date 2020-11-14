@@ -101,7 +101,7 @@ class AudioPlayer {
     return success;
   }
 
-  Future<bool> loadSine(
+  Future<bool> loadWave(
       double amplitude, double frequency, int waveType) async {
     this._setPlayerState(true, false, true, true);
     bool success;
@@ -111,7 +111,7 @@ class AudioPlayer {
       if (this._playerState[0]) {
         waveAmplitude = amplitude;
         waveFrequency = frequency;
-        await _channel.invokeMethod('loadSine', {
+        await _channel.invokeMethod('loadWave', {
           'amplitude': amplitude,
           'frequency': frequency,
           'waveType': waveType

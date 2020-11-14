@@ -71,9 +71,9 @@ namespace Audio
         audioPlayer->setWaveSampleRate(sampleRate);
     }
 
-    void loadSine(double amplitude, double frequency, int waveType)
+    void loadWave(double amplitude, double frequency, int waveType)
     {
-        audioPlayer->loadSine(amplitude, frequency, waveType);
+        audioPlayer->loadWave(amplitude, frequency, waveType);
     }
 
     float getVolume()

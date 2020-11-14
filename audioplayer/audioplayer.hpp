@@ -227,7 +227,7 @@ public:
         ma_waveform_set_sample_rate(&this->sineWave, waveSampleRate);
     }
 
-    void loadSine(double amplitude, double frequency, int waveType)
+    void loadWave(double amplitude, double frequency, int waveType)
     {
         // 0 = sine
         // 1 = square

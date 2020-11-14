@@ -90,7 +90,7 @@ namespace
 
       result->Success(flutter::EncodableValue(nullptr));
     }
-    else if (method_call.method_name() == "loadSine")
+    else if (method_call.method_name() == "loadWave")
     {
       double amplitude = 0;
       double frequency = 0;
@@ -116,7 +116,7 @@ namespace
         frequency = std::get<int>(encodedWaveType->second);
       }
 
-      Audio::loadSine(amplitude, frequency, waveType);
+      Audio::loadWave(amplitude, frequency, waveType);
 
       result->Success(flutter::EncodableValue(nullptr));
     }
