@@ -113,7 +113,7 @@ namespace
       auto encodedWaveType = arguments->find(flutter::EncodableValue("wave_type"));
       if (encodedWaveType != arguments->end())
       {
-        frequency = std::get<int>(encodedWaveType->second);
+        waveType = std::get<int>(encodedWaveType->second);
       }
 
       Audio::loadWave(amplitude, frequency, waveType);
