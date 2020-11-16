@@ -29,7 +29,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
     int debug = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("debug")));
 
-    Audio::initPlayer(debug);
+    Audio::initPlayer(id, debug);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
@@ -39,7 +39,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
     int deviceIndex = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("device_index")));
 
-    Audio::setDevice(deviceIndex);
+    Audio::setDevice(id, deviceIndex);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
@@ -49,7 +49,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
     const gchar *fileName = fl_value_get_string(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("file_location")));
 
-    Audio::loadPlayer(fileName);
+    Audio::loadPlayer(id, fileName);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
@@ -60,7 +60,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
     const float amplitude = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("amplitude")));
     const float frequency = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("frequency")));
     const int waveType = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("wave_type")));
-    Audio::loadWave(amplitude, frequency, waveType);
+    Audio::loadWave(id, amplitude, frequency, waveType);
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
@@ -68,7 +68,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
 
-    Audio::playPlayer();
+    Audio::playPlayer(id);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
@@ -77,7 +77,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
 
-    Audio::pausePlayer();
+    Audio::pausePlayer(id);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
@@ -86,7 +86,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
 
-    Audio::stopPlayer();
+    Audio::stopPlayer(id);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
@@ -95,7 +95,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
 
-    int playerDuration = Audio::getDuration();
+    int playerDuration = Audio::getDuration(id);
 
     g_autoptr(FlValue) playerDurationResponse = fl_value_new_int(playerDuration);
 
@@ -106,7 +106,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
 
-    int playerPostion = Audio::getPosition();
+    int playerPostion = Audio::getPosition(id);
 
     g_autoptr(FlValue) playerPostionResponse = fl_value_new_int(playerPostion);
 
@@ -119,7 +119,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
     // in Miliseconds
     int duration = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("duration")));
 
-    Audio::setPosition(duration);
+    Audio::setPosition(id, duration);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
@@ -129,7 +129,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
 
     float amplitude = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("amplitude")));
 
-    Audio::setWaveAmplitude(amplitude);
+    Audio::setWaveAmplitude(id, amplitude);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
@@ -138,7 +138,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
 
     float frequency = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("frequency")));
-    Audio::setWaveFrequency(frequency);
+    Audio::setWaveFrequency(id, frequency);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
@@ -147,7 +147,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
     const int sampleRate = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("sampleRate")));
 
-    Audio::setWaveSampleRate(sampleRate);
+    Audio::setWaveSampleRate(id, sampleRate);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
