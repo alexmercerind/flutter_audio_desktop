@@ -4,80 +4,97 @@
 
 namespace Audio
 {
-    AudioPlayer *audioPlayer;
 
-    void initPlayer(int debug)
+    AudioPlayerManager* audioPlayerManager = new AudioPlayerManager();
+
+    void initPlayer(int id, int debug)
     {
-        audioPlayer = new AudioPlayer(static_cast<bool>(debug));
+
+        AudioPlayer* audioPlayer = new AudioPlayer(id, static_cast<bool>(debug));
+        audioPlayerManager->players.insert(audioPlayerManager->players.end(), audioPlayer);
     }
 
-    void setDevice(int deviceIndex)
+    void setDevice(int id, int deviceIndex)
     {
+        AudioPlayer* audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->setDevice(deviceIndex);
     }
 
-    void loadPlayer(const char *fileLocation)
+    void loadPlayer(int id, const char *fileLocation)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->load(fileLocation);
     }
 
-    void playPlayer()
+    void playPlayer(int id)
     {
+       auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->play();
     }
 
-    void pausePlayer()
+    void pausePlayer(int id)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->pause();
     }
 
-    void stopPlayer()
+    void stopPlayer(int id)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->stop();
     }
 
-    int getDuration()
+    int getDuration(int id)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         return audioPlayer->getDuration();
     }
 
-    int getPosition()
+    int getPosition(int id)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         return audioPlayer->getPosition();
     }
 
-    void setPosition(int timeMilliseconds)
+    void setPosition(int id, int timeMilliseconds)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->setPosition(timeMilliseconds);
     }
 
-    void setVolume(double volume)
+    void setVolume(int id, double volume)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->setVolume(volume);
     }
 
-    void setWaveFrequency(double frequency)
+    void setWaveFrequency(int id, double frequency)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->setWaveFrequency(frequency);
     }
 
-    void setWaveAmplitude(double amplitude)
+    void setWaveAmplitude(int id, double amplitude)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->setWaveAmplitude(amplitude);
     }
 
-    void setWaveSampleRate(int sampleRate)
+    void setWaveSampleRate(int id, int sampleRate)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->setWaveSampleRate(sampleRate);
     }
 
-    void loadWave(double amplitude, double frequency, int waveType)
+    void loadWave(int id, double amplitude, double frequency, int waveType)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->loadWave(amplitude, frequency, waveType);
     }
 
-    float getVolume()
+    float getVolume(int id)
     {
+        auto audioPlayer = audioPlayerManager->players.at(id);
         return audioPlayer->getVolume();
     }
 } // namespace Audio

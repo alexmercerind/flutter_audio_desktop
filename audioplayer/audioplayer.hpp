@@ -4,6 +4,7 @@
 #include "miniaudio.h"
 #include <thread>
 #include <iostream>
+#include <vector>
 
 void dataCallback(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
 {
@@ -45,6 +46,7 @@ public:
     ma_waveform sineWave;
 
     bool debug;
+    int id;
     int audioDurationMilliseconds;
 
     void showDevices()
@@ -93,7 +95,7 @@ public:
 
     void initDeviceWave()
     {
-        
+
         ma_device_id selectedDeviceId = this->pPlaybackDeviceInfos[this->deviceIndex].id;
         this->deviceConfig = ma_device_config_init(ma_device_type_playback);
         this->deviceConfig.playback.pDeviceID = &selectedDeviceId;
@@ -115,9 +117,10 @@ public:
 class AudioPlayer : public AudioPlayerInternal
 {
 public:
-    AudioPlayer(bool debug = false)
+    AudioPlayer(int id = 1, bool debug = false)
     {
         this->debug = debug;
+        this->id = id;
         this->showDevices();
     }
 
@@ -251,8 +254,8 @@ public:
         }
 
         this->sineWaveConfig =
-        ma_waveform_config_init(this->sampleFormat, this->channelCount,
-                                this->sampleRate, maWaveType, amplitude, frequency);
+            ma_waveform_config_init(this->sampleFormat, this->channelCount,
+                                    this->sampleRate, maWaveType, amplitude, frequency);
         ma_waveform_init(&this->sineWaveConfig, &this->sineWave);
         this->initDeviceWave();
     }
@@ -267,4 +270,9 @@ public:
         }
         return volume;
     }
+};
+
+struct AudioPlayerManager
+{
+    std::vector <AudioPlayer*> players;
 };

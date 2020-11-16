@@ -8,6 +8,7 @@ import 'dart:io';
 final MethodChannel _channel = MethodChannel('flutter_audio_desktop');
 
 class AudioPlayer {
+  final int id;
   final bool debug;
   bool isLoaded = false;
   bool isPlaying = false;
@@ -26,11 +27,11 @@ class AudioPlayer {
   ///  You can optionally pass `debug: true` for extra logging.
   ///
   ///     AudioPlayer audioPlayer = new AudioPlayer(debug: true);
-  AudioPlayer({this.debug = false}) {
+  AudioPlayer({this.debug = false, this.id = 1}) {
     if (this.debug) {
-      _channel.invokeMethod('init', 1);
+      _channel.invokeMethod('init', {'id': id, 'debug': true});
     } else {
-      _channel.invokeMethod('init', 0);
+      _channel.invokeMethod('init', {'id': id, 'debug': false});
     }
   }
 
@@ -41,8 +42,8 @@ class AudioPlayer {
   /// NOTE: This method must be called before [load] method.
   ///
   /// This method might be useful, if your device has more than one available playback devices.
-  void setDevice({int deviceIndex = 0}) =>
-      _channel.invokeMethod('setDevice', deviceIndex);
+  void setDevice({int deviceIndex = 0}) => _channel
+      .invokeMethod('setDevice', {'id': id, 'device_index': deviceIndex});
 
   /// ## Loading Audio File
   ///
@@ -63,14 +64,15 @@ class AudioPlayer {
   Future<bool> load(String fileLocation) async {
     File audioFile = File(fileLocation);
     if (this._playerState[1]) {
-      await _channel.invokeMethod('pause');
+      await _channel.invokeMethod('pause', {'id': id});
     }
     if (this._playerState[0]) {
-      await _channel.invokeMethod('stop');
+      await _channel.invokeMethod('stop', {'id': id});
     }
     if (await audioFile.exists()) {
       this._setPlayerState(true, false, true, true);
-      await _channel.invokeMethod('load', fileLocation);
+      await _channel
+          .invokeMethod('load', {'id': id, 'file_location': fileLocation});
       return true;
     } else {
       this._setPlayerState(false, false, false, true);
@@ -92,7 +94,7 @@ class AudioPlayer {
     } else {
       if (this._playerState[0]) {
         this._setPlayerState(true, true, false, false);
-        await _channel.invokeMethod('play');
+        await _channel.invokeMethod('play', {'id': id});
         success = true;
       } else {
         success = false;
@@ -101,6 +103,17 @@ class AudioPlayer {
     return success;
   }
 
+  /// ## Loading Waves
+  ///
+  ///  Results in `Future<true>`, if the wave is successfully loaded.
+  ///
+  ///  Returns `Future<false>`, if the wave was not loaded
+  ///
+  /// Example of valid waves:
+  ///
+  /// 1) `loadWave(0.2, 200, 0)`
+  ///
+  /// 2) `"loadWave(0.4, 400, 3)"`
   Future<bool> loadWave(
       double amplitude, double frequency, int waveType) async {
     this._setPlayerState(true, false, true, true);
@@ -112,6 +125,7 @@ class AudioPlayer {
         waveAmplitude = amplitude;
         waveFrequency = frequency;
         await _channel.invokeMethod('loadWave', {
+          'id': id,
           'amplitude': amplitude,
           'frequency': frequency,
           'wave_type': waveType
@@ -137,7 +151,7 @@ class AudioPlayer {
     } else {
       if (this._playerState[0]) {
         this._setPlayerState(true, false, true, false);
-        await _channel.invokeMethod('pause');
+        await _channel.invokeMethod('pause', {'id': id});
         return true;
       } else {
         return false;
@@ -162,8 +176,8 @@ class AudioPlayer {
     } else {
       if (this._playerState[0]) {
         this._setPlayerState(false, false, false, true);
-        await _channel.invokeMethod('pause');
-        await _channel.invokeMethod('stop');
+        await _channel.invokeMethod('pause', {'id': id});
+        await _channel.invokeMethod('stop', {'id': id});
         return true;
       } else {
         return false;
@@ -180,7 +194,8 @@ class AudioPlayer {
   ///  Returns `Future<false>` if no file is loaded.
   Future<dynamic> getDuration() async {
     if (this._playerState[0]) {
-      return Duration(milliseconds: await _channel.invokeMethod('getDuration'));
+      return Duration(
+          milliseconds: await _channel.invokeMethod('getDuration', {'id': id}));
     } else {
       return false;
     }
@@ -196,7 +211,8 @@ class AudioPlayer {
   Future<dynamic> getPosition() async {
     if (this._playerState[0] &&
         (this._playerState[1] || this._playerState[2])) {
-      return Duration(milliseconds: await _channel.invokeMethod('getPosition'));
+      return Duration(
+          milliseconds: await _channel.invokeMethod('getPosition', {'id': id}));
     }
     if (this._playerState[0]) {
       return Duration(milliseconds: 0);
@@ -214,7 +230,8 @@ class AudioPlayer {
   ///  Returns `Future<false>` if no file is loaded.
   Future<bool> setPosition(Duration duration) async {
     if (this._playerState[0]) {
-      await _channel.invokeMethod('setPosition', duration.inMilliseconds);
+      await _channel.invokeMethod(
+          'setPosition', {'id': id, 'duration': duration.inMilliseconds});
       return true;
     } else {
       return false;
@@ -229,22 +246,25 @@ class AudioPlayer {
   ///
   ///     double currentVolume = audioPlayer.volume;
   void setVolume(double volume) {
-    _channel.invokeMethod('setVolume', volume);
+    _channel.invokeMethod('setVolume', {'id': id, 'volume': volume});
     this.volume = volume;
   }
 
   void setWaveAmplitude(double amplitude) {
-    _channel.invokeMethod('setWaveAmplitude', amplitude);
+    _channel
+        .invokeMethod('setWaveAmplitude', {'id': id, 'amplitude': amplitude});
     this.waveAmplitude = amplitude;
   }
 
   void setWaveFrequency(double frequency) {
-    _channel.invokeMethod('setWaveFrequency', frequency);
+    _channel
+        .invokeMethod('setWaveFrequency', {'id': id, 'frequency': frequency});
     this.waveFrequency = frequency;
   }
 
   void setWaveSampleRate(int sampleRate) {
-    _channel.invokeMethod('setWaveSampleRate', sampleRate);
+    _channel.invokeMethod(
+        'setWaveSampleRate', {'id': id, 'sample_rate': sampleRate});
     this.waveSampleRate = sampleRate;
   }
 

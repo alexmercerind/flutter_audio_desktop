@@ -9,6 +9,7 @@ class Player extends StatefulWidget {
 class PlayerState extends State<Player> {
   /// Simple player implementation. Setting debug: true for extra logging.
   AudioPlayer audioPlayer;
+  AudioPlayer audioPlayer2;
 
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String _textFieldValue = '';
@@ -16,7 +17,8 @@ class PlayerState extends State<Player> {
   @override
   void initState() {
     super.initState();
-    this.audioPlayer = new AudioPlayer(debug: true);
+    this.audioPlayer = new AudioPlayer(id: 0, debug: true);
+    this.audioPlayer2 = new AudioPlayer(id: 1, debug: true);
   }
 
   Widget build(BuildContext context) {
@@ -35,9 +37,11 @@ class PlayerState extends State<Player> {
             if (audioPlayer.isPaused) {
               /// Playing loaded audio file.
               this.audioPlayer.play();
+              this.audioPlayer2.play();
             } else if (audioPlayer.isPlaying) {
               /// Pausing playback of loaded audio file.
               this.audioPlayer.pause();
+              this.audioPlayer2.pause();
             }
           }
         },
@@ -61,7 +65,10 @@ class PlayerState extends State<Player> {
                 ),
                 onPressed: () async {
                   audioPlayer.setDevice(deviceIndex: 2);
+                  audioPlayer2.setDevice(deviceIndex: 2);
+
                   audioPlayer.loadWave(0.2, 400, 0);
+                  audioPlayer2.loadWave(0.2, 700, 0);
                 },
               ),
             ]),
