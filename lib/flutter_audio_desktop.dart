@@ -14,9 +14,9 @@ class AudioPlayer {
   bool isPlaying = false;
   bool isPaused = false;
   bool isStopped = true;
-  double volume = 1.0;
-  double waveAmplitude = 0;
-  double waveFrequency = 0;
+  double volume = .5;
+  double waveAmplitude = 0.1;
+  double waveFrequency = 440;
   int waveSampleRate = 44800;
   List<bool> _playerState = [false, false, false, true];
 

@@ -297,11 +297,11 @@ namespace
       }
 
       // Map volume
-      int volume = 0;
+      double volume = 0;
       auto encodedVolume = arguments->find(flutter::EncodableValue("volume"));
       if (encodedVolume != arguments->end())
       {
-        volume = std::get<int>(encodedVolume->second);
+        volume = std::get<double>(encodedVolume->second);
       }
       Audio::setVolume(playerID, volume);
 

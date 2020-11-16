@@ -21,10 +21,10 @@ dependencies:
 ## :triangular_ruler: Usage
 
 ```dart
-// Start AudioPlayer.
-var audioPlayer = new AudioPlayer();
+// Start AudioPlayer and provide int for id.
+var audioPlayer = new AudioPlayer(id: 0);
 
-// Load audio file.
+// Load audio file
 audioPlayer.load('/home/alexmercerind/music.mp3');
 
 // Start playing loaded audio file.
