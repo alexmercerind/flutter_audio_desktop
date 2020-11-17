@@ -5,18 +5,17 @@
 namespace Audio
 {
 
-    AudioPlayerManager* audioPlayerManager = new AudioPlayerManager();
+    AudioPlayerManager *audioPlayerManager = new AudioPlayerManager();
 
     void initPlayer(int id, int debug)
     {
-
-        AudioPlayer* audioPlayer = new AudioPlayer(id, static_cast<bool>(debug));
+        AudioPlayer *audioPlayer = new AudioPlayer(id, static_cast<bool>(debug));
         audioPlayerManager->players.insert(audioPlayerManager->players.end(), audioPlayer);
     }
 
     void setDevice(int id, int deviceIndex)
     {
-        AudioPlayer* audioPlayer = audioPlayerManager->players.at(id);
+        AudioPlayer *audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->setDevice(deviceIndex);
     }
 
@@ -28,7 +27,7 @@ namespace Audio
 
     void playPlayer(int id)
     {
-       auto audioPlayer = audioPlayerManager->players.at(id);
+        auto audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->play();
     }
 
