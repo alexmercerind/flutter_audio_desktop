@@ -229,6 +229,28 @@ public:
     {
         ma_waveform_set_sample_rate(&this->sineWave, waveSampleRate);
     }
+    
+    void setWaveType(int waveType)
+    {
+        ma_waveform_type maWaveType = ma_waveform_type_sine;
+        switch (waveType)
+        {
+        case 0:
+            maWaveType = ma_waveform_type_sine;
+            break;
+        case 1:
+            maWaveType = ma_waveform_type_square;
+            break;
+        case 2:
+            maWaveType = ma_waveform_type_triangle;
+            break;
+        case 3:
+            maWaveType = ma_waveform_type_sawtooth;
+            break;
+        }
+
+        ma_waveform_set_type(&this->sineWave, maWaveType);
+    }
 
     void loadWave(double amplitude, double frequency, int waveType)
     {
@@ -274,5 +296,5 @@ public:
 
 struct AudioPlayerManager
 {
-    std::vector <AudioPlayer*> players;
+    std::vector<AudioPlayer *> players;
 };

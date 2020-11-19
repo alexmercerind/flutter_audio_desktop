@@ -85,6 +85,12 @@ namespace Audio
         audioPlayer->setWaveSampleRate(sampleRate);
     }
 
+    void setWaveType(int id, int waveType)
+    {
+        auto audioPlayer = audioPlayerManager->players.at(id);
+        audioPlayer->setWaveType(waveType);
+    }
+
     void loadWave(int id, double amplitude, double frequency, int waveType)
     {
         auto audioPlayer = audioPlayerManager->players.at(id);
