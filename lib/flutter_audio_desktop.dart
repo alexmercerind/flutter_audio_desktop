@@ -14,6 +14,9 @@ class AudioPlayer {
   bool isPaused = false;
   bool isStopped = true;
   double volume = 1.0;
+  double waveAmplitude = 0;
+  double waveFrequency = 0;
+  int waveSampleRate = 44800;
   List<bool> _playerState = [false, false, false, true];
 
   /// ## Starting Audio Service
@@ -34,11 +37,12 @@ class AudioPlayer {
   /// ## Changing Playback Device
   ///
   ///     await audioPlayer.setDevice(deviceIndex: 0);
-  /// 
+  ///
   /// NOTE: This method must be called before [load] method.
-  /// 
+  ///
   /// This method might be useful, if your device has more than one available playback devices.
-  void setDevice({int deviceIndex = 0}) => _channel.invokeMethod('setDevice', deviceIndex);
+  void setDevice({int deviceIndex = 0}) =>
+      _channel.invokeMethod('setDevice', deviceIndex);
 
   /// ## Loading Audio File
   ///
@@ -89,6 +93,29 @@ class AudioPlayer {
       if (this._playerState[0]) {
         this._setPlayerState(true, true, false, false);
         await _channel.invokeMethod('play');
+        success = true;
+      } else {
+        success = false;
+      }
+    }
+    return success;
+  }
+
+  Future<bool> loadWave(
+      double amplitude, double frequency, int waveType) async {
+    this._setPlayerState(true, false, true, true);
+    bool success;
+    if (this._playerState[1]) {
+      success = false;
+    } else {
+      if (this._playerState[0]) {
+        waveAmplitude = amplitude;
+        waveFrequency = frequency;
+        await _channel.invokeMethod('loadWave', {
+          'amplitude': amplitude,
+          'frequency': frequency,
+          'wave_type': waveType
+        });
         success = true;
       } else {
         success = false;
@@ -204,6 +231,21 @@ class AudioPlayer {
   void setVolume(double volume) {
     _channel.invokeMethod('setVolume', volume);
     this.volume = volume;
+  }
+
+  void setWaveAmplitude(double amplitude) {
+    _channel.invokeMethod('setWaveAmplitude', amplitude);
+    this.waveAmplitude = amplitude;
+  }
+
+  void setWaveFrequency(double frequency) {
+    _channel.invokeMethod('setWaveFrequency', frequency);
+    this.waveFrequency = frequency;
+  }
+
+  void setWaveSampleRate(int sampleRate) {
+    _channel.invokeMethod('setWaveSampleRate', sampleRate);
+    this.waveSampleRate = sampleRate;
   }
 
   void _setPlayerState(
