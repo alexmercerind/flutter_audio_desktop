@@ -26,64 +26,76 @@ static void flutter_audio_desktop_plugin_handle_method_call(
 
   if (strcmp(method, "init") == 0)
   {
-    int debug = fl_value_get_int(fl_method_call_get_args(method_call));
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+    int debug = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("debug")));
 
-    Audio::initPlayer(debug);
+    Audio::initPlayer(id, debug);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
   if (strcmp(method, "setDevice") == 0)
   {
-    int deviceIndex = fl_value_get_int(fl_method_call_get_args(method_call));
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+    int deviceIndex = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("device_index")));
 
-    Audio::setDevice(deviceIndex);
+    Audio::setDevice(id, deviceIndex);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
   else if (strcmp(method, "load") == 0)
   {
-    const gchar *fileName = fl_value_get_string(fl_method_call_get_args(method_call));
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+    const gchar *fileName = fl_value_get_string(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("file_location")));
 
-    Audio::loadPlayer(fileName);
+    Audio::loadPlayer(id, fileName);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
   else if (strcmp(method, "loadWave") == 0)
   {
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
     const float amplitude = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("amplitude")));
     const float frequency = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("frequency")));
     const int waveType = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("wave_type")));
-    Audio::loadWave(amplitude, frequency, waveType);
+    Audio::loadWave(id, amplitude, frequency, waveType);
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
   else if (strcmp(method, "play") == 0)
   {
-    Audio::playPlayer();
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+
+    Audio::playPlayer(id);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
   else if (strcmp(method, "pause") == 0)
   {
-    Audio::pausePlayer();
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+
+    Audio::pausePlayer(id);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
   else if (strcmp(method, "stop") == 0)
   {
-    Audio::stopPlayer();
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+
+    Audio::stopPlayer(id);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
   else if (strcmp(method, "getDuration") == 0)
   {
-    int playerDuration = Audio::getDuration();
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+
+    int playerDuration = Audio::getDuration(id);
 
     g_autoptr(FlValue) playerDurationResponse = fl_value_new_int(playerDuration);
 
@@ -92,7 +104,9 @@ static void flutter_audio_desktop_plugin_handle_method_call(
 
   else if (strcmp(method, "getPosition") == 0)
   {
-    int playerPostion = Audio::getPosition();
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+
+    int playerPostion = Audio::getPosition(id);
 
     g_autoptr(FlValue) playerPostionResponse = fl_value_new_int(playerPostion);
 
@@ -101,43 +115,49 @@ static void flutter_audio_desktop_plugin_handle_method_call(
 
   else if (strcmp(method, "setPosition") == 0)
   {
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+    // in Miliseconds
+    int duration = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("duration")));
 
-    int timeMilliseconds = fl_value_get_int(fl_method_call_get_args(method_call));
-
-    Audio::setPosition(timeMilliseconds);
-
-    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
-  }
-    else if (strcmp(method, "setWaveAmplitude") == 0)
-  {
-    float amplitude = fl_value_get_float(fl_method_call_get_args(method_call));
-
-    Audio::setWaveAmplitude(amplitude);
+    Audio::setPosition(id, duration);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
-    else if (strcmp(method, "setWaveFrequency") == 0)
+  else if (strcmp(method, "setWaveAmplitude") == 0)
   {
-    float frequency = fl_value_get_float(fl_method_call_get_args(method_call));
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
 
-    Audio::setWaveFrequency(frequency);
+    float amplitude = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("amplitude")));
+
+    Audio::setWaveAmplitude(id, amplitude);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
-    else if (strcmp(method, "setWaveSampleRate") == 0)
+  else if (strcmp(method, "setWaveFrequency") == 0)
   {
-    int sampleRate = fl_value_get_int(fl_method_call_get_args(method_call));
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
 
-    Audio::setWaveSampleRate(sampleRate);
+    float frequency = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("frequency")));
+    Audio::setWaveFrequency(id, frequency);
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  }
+  else if (strcmp(method, "setWaveSampleRate") == 0)
+  {
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+    const int sampleRate = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("sampleRate")));
+
+    Audio::setWaveSampleRate(id, sampleRate);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
 
   else if (strcmp(method, "setVolume") == 0)
   {
-    float volume = fl_value_get_float(fl_method_call_get_args(method_call));
+    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+    float volume = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("volume")));
 
-    Audio::setVolume(volume);
+    Audio::setVolume(id, volume);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
