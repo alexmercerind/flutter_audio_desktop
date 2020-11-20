@@ -7,9 +7,9 @@ namespace Audio
 
     AudioPlayerManager *audioPlayerManager = new AudioPlayerManager();
 
-    void initPlayer(int id, int debug)
+    void initPlayer(int id, bool debug)
     {
-        AudioPlayer *audioPlayer = new AudioPlayer(id, static_cast<bool>(debug));
+        AudioPlayer *audioPlayer = new AudioPlayer(id, debug);
         audioPlayerManager->players.insert(audioPlayerManager->players.end(), audioPlayer);
     }
 
