@@ -19,6 +19,12 @@ namespace Audio
         audioPlayer->setDevice(deviceIndex);
     }
 
+    int getDeviceCount()
+    {
+        AudioPlayer *audioPlayer = audioPlayerManager->players.at(0);
+        return audioPlayer->playbackDeviceCount;
+    }
+
     void loadPlayer(int id, const char *fileLocation)
     {
         auto audioPlayer = audioPlayerManager->players.at(id);
