@@ -26,8 +26,8 @@ static void flutter_audio_desktop_plugin_handle_method_call(
 
   if (strcmp(method, "init") == 0)
   {
-    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
-    int debug = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("debug")));
+    int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+    bool debug = fl_value_get_bool(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("debug")));
 
     Audio::initPlayer(id, debug);
 
@@ -117,7 +117,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
     // in Miliseconds
-    int duration = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("duration")));
+    int duration = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("duration")));
 
     Audio::setPosition(id, duration);
 
@@ -145,7 +145,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   else if (strcmp(method, "setWaveSampleRate") == 0)
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
-    const int sampleRate = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("sampleRate")));
+    const int sampleRate = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("sample_rate")));
 
     Audio::setWaveSampleRate(id, sampleRate);
 

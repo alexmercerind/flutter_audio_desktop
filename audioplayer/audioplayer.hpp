@@ -62,7 +62,7 @@ public:
         }
         for (ma_uint32 index = 0; index < this->playbackDeviceCount; index += 1)
         {
-            std::cout << index << " - " << this->pPlaybackDeviceInfos[index].name << std::endl;
+            //std::cout << index << " - " << this->pPlaybackDeviceInfos[index].name << std::endl;
         }
     }
 
@@ -88,8 +88,8 @@ public:
         ma_device_init(NULL, &this->deviceConfig, &this->device);
         if (this->debug)
         {
-            std::cout << "Channel Count: " << this->decoder.outputChannels << std::endl;
-            std::cout << "Sample Rate  : " << this->decoder.outputSampleRate << std::endl;
+            //std::cout << "Channel Count: " << this->decoder.outputChannels << std::endl;
+            //std::cout << "Sample Rate  : " << this->decoder.outputSampleRate << std::endl;
         }
     }
 
@@ -108,8 +108,8 @@ public:
 
         if (this->debug)
         {
-            std::cout << "Channel Count: " << this->channelCount << std::endl;
-            std::cout << "Sample Rate  : " << this->sampleRate << std::endl;
+            //std::cout << "Channel Count: " << this->channelCount << std::endl;
+            //std::cout << "Sample Rate  : " << this->sampleRate << std::endl;
         }
     }
 };
@@ -129,7 +129,7 @@ public:
         this->deviceIndex = index;
         if (this->debug)
         {
-            std::cout << "Selected Device: " << this->deviceIndex << " - " << this->pPlaybackDeviceInfos[deviceIndex].name << std::endl;
+            //std::cout << "Selected Device: " << this->deviceIndex << " - " << this->pPlaybackDeviceInfos[deviceIndex].name << std::endl;
         }
     }
 
@@ -139,7 +139,7 @@ public:
         this->initDevice();
         if (this->debug)
         {
-            std::cout << "Loaded File: " << file << std::endl;
+            //std::cout << "Loaded File: " << file << std::endl;
         }
     }
 
@@ -149,8 +149,8 @@ public:
 
         if (this->debug)
         {
-            std::cout << std::boolalpha;
-            std::cout << "Started Playback. await = " << await << std::endl;
+            //std::cout << std::boolalpha;
+            //std::cout << "Started Playback. await = " << await << std::endl;
         }
         if (await)
             std::this_thread::sleep_for(std::chrono::milliseconds(this->getDuration()));
@@ -161,7 +161,7 @@ public:
         ma_device_stop(&this->device);
         if (this->debug)
         {
-            std::cout << "Paused Playback." << std::endl;
+            //std::cout << "Paused Playback." << std::endl;
         }
     }
 
@@ -171,7 +171,7 @@ public:
         ma_decoder_uninit(&this->decoder);
         if (this->debug)
         {
-            std::cout << "Stopped Playback." << std::endl;
+            //std::cout << "Stopped Playback." << std::endl;
         }
     }
 
@@ -179,7 +179,7 @@ public:
     {
         if (this->debug)
         {
-            std::cout << "Audio Duration: " << this->audioDurationMilliseconds << " ms" << std::endl;
+            //std::cout << "Audio Duration: " << this->audioDurationMilliseconds << " ms" << std::endl;
         }
         return this->audioDurationMilliseconds;
     }
@@ -190,7 +190,7 @@ public:
         ma_decoder_seek_to_pcm_frame(&decoder, timeFrames);
         if (this->debug)
         {
-            std::cout << "Set Position: " << timeMilliseconds << " ms" << std::endl;
+            //std::cout << "Set Position: " << timeMilliseconds << " ms" << std::endl;
         }
     }
 
@@ -201,7 +201,7 @@ public:
         int positionMilliseconds = ma_calculate_buffer_size_in_milliseconds_from_frames(static_cast<int>(positionFrames), this->sampleRate);
         if (this->debug)
         {
-            std::cout << "Current Position: " << positionMilliseconds << " ms" << std::endl;
+            //std::cout << "Current Position: " << positionMilliseconds << " ms" << std::endl;
         }
         return positionMilliseconds;
     }
@@ -211,7 +211,7 @@ public:
         ma_device_set_master_volume(&this->device, static_cast<float>(volume));
         if (this->debug)
         {
-            std::cout << "Set Volume: " << volume << std::endl;
+            //std::cout << "Set Volume: " << volume << std::endl;
         }
     }
 
@@ -266,7 +266,7 @@ public:
         ma_device_get_master_volume(&this->device, &volume);
         if (this->debug)
         {
-            std::cout << "Current Volume: " << volume << std::endl;
+            //std::cout << "Current Volume: " << volume << std::endl;
         }
         return volume;
     }
