@@ -29,6 +29,21 @@ class AudioPlayer {
   ///     AudioPlayer audioPlayer = new AudioPlayer(debug: true);
   AudioPlayer({this.debug = false, this.id = 0}) {
     _channel.invokeMethod('init', {'id': id, 'debug': debug});
+    printDevices();
+  }
+
+  void printDevices() async {
+    var devices = await getDevices();
+    print(devices);
+  }
+
+  /// ## Get Audio Devices
+  ///
+  ///     Map<String,dynamic> audioDevices= await audioPlayer.getDevices();
+  ///
+  ///  Results in `Future<Duration>`.
+  Future<dynamic> getDevices() async {
+    return await _channel.invokeMethod('getDevices');
   }
 
   /// ## Changing Playback Device
