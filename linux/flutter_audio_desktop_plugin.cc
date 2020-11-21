@@ -123,13 +123,15 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   }
   else if (strcmp(method, "getDevices") == 0)
   {
+    // Get count, new array, fill array
     int count = Audio::getDeviceCount();
-
     AudioDevice* devices = new AudioDevice[count + 1];
     Audio::getDevices(devices);
 
+    // Map for flutter
     g_autoptr(FlValue) deviceInfo = fl_value_new_map();
 
+    // Fill Map
     for (int i = 0; i < count; i++)
     {
 	        const char *c = devices[i].name.c_str();        
@@ -137,7 +139,8 @@ static void flutter_audio_desktop_plugin_handle_method_call(
           deviceInfo, std::to_string(i).c_str(),
           fl_value_new_string(c));
     }
-
+    
+    // Set default
     fl_value_set_string_take(
         deviceInfo, "default",
         fl_value_new_int(devices[count].id));

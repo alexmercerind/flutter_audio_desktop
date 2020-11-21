@@ -98,9 +98,6 @@ class PlayerState extends State<Player> {
                     ),
                     tooltip: 'Load Audio',
                     onPressed: () async {
-                      /// Setting playback device manually (if you have more than one playback device).
-                      audioPlayer.setDevice(deviceIndex: 2);
-
                       /// Loading an audio file into the player.
                       bool result =
                           await audioPlayer.load(this._textFieldValue);
@@ -192,6 +189,19 @@ class PlayerState extends State<Player> {
                           this.setState(() {
                             /// Changing player volume.
                             this.audioPlayer.setWaveSampleRate(value.toInt());
+                          });
+                        }),
+                    Slider(
+                        divisions: 4,
+                        value: audioPlayer.deviceIndex.toDouble(),
+                        min: 0,
+                        max: 3,
+                        onChanged: (value) {
+                          this.setState(() {
+                            /// Changing player volume.
+                            this
+                                .audioPlayer
+                                .setDevice(deviceIndex: value.toInt());
                           });
                         }),
                   ],

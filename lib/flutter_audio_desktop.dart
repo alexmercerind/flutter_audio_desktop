@@ -10,6 +10,7 @@ final MethodChannel _channel = MethodChannel('flutter_audio_desktop');
 class AudioPlayer {
   final int id;
   final bool debug;
+  int deviceIndex = 0;
   bool isLoaded = false;
   bool isPlaying = false;
   bool isPaused = false;
@@ -36,6 +37,8 @@ class AudioPlayer {
 
   void _printDevices() async {
     var devices = await getDevices();
+    deviceIndex = devices['default'];
+    print("Default: " + deviceIndex.toString());
     print(devices);
   }
 
@@ -55,8 +58,10 @@ class AudioPlayer {
   ///     await audioPlayer.setDevice(deviceIndex: await GetDevices()['default']);
   ///
   /// This method might be useful, if your device has more than one available playback devices.
-  void setDevice({int deviceIndex = 0}) => _channel
-      .invokeMethod('setDevice', {'id': id, 'device_index': deviceIndex});
+  void setDevice({int deviceIndex = 0}) {
+    this.deviceIndex = deviceIndex;
+    _channel.invokeMethod('setDevice', {'id': id, 'device_index': deviceIndex});
+  }
 
   /// ## Load Audio File
   ///
