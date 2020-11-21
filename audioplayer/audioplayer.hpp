@@ -249,7 +249,7 @@ public:
     {
         this->isPlaying = false;
         ma_device_stop(&this->device);
-        ma_decoder_uninit(&this->decoder);
+        //ma_decoder_uninit(&this->decoder);
         if (this->debug)
         {
             // TODO: Move debug output to message channel

@@ -20,6 +20,7 @@ class AudioPlayer {
   double waveFrequency = 440;
   int waveSampleRate = 44800;
   List<bool> _playerState = [false, false, false, true];
+  Map<dynamic, dynamic> devices = new Map<dynamic, dynamic>();
 
   /// ## Starting Audio Service
   ///
@@ -31,15 +32,10 @@ class AudioPlayer {
   AudioPlayer({this.debug = false, this.id = 0}) {
     _channel.invokeMethod('init', {'id': id, 'debug': debug});
     if (debug) {
-      _printDevices();
+      getDevices(printDebug: true);
+    } else {
+      getDevices(printDebug: false);
     }
-  }
-
-  void _printDevices() async {
-    var devices = await getDevices();
-    deviceIndex = devices['default'];
-    print("Default: " + deviceIndex.toString());
-    print(devices);
   }
 
   /// ## Get Audio Devices
@@ -49,8 +45,14 @@ class AudioPlayer {
   /// The key of the default device can be found at the "default" key
   ///
   ///  Results in `Future<Duration>`.
-  Future<dynamic> getDevices() async {
-    return await _channel.invokeMethod('getDevices');
+  Future<dynamic> getDevices({bool printDebug = false}) async {
+    devices = await _channel.invokeMethod('getDevices');
+    deviceIndex = devices['default'];
+    if (printDebug) {
+      print("Default: " + deviceIndex.toString());
+      print(devices);
+    }
+    return devices;
   }
 
   /// ## Change Playback Device

@@ -134,6 +134,26 @@ class PlayerState extends State<Player> {
                             this.audioPlayer.setVolume(value);
                           });
                         }),
+                    Icon(
+                      Icons.device_hub,
+                      size: 36,
+                      color: Colors.blue,
+                    ),
+                    Slider(
+                        divisions: audioPlayer.devices.length > 0
+                            ? audioPlayer.devices.length
+                            : 1,
+                        value: audioPlayer.deviceIndex.toDouble(),
+                        min: 0,
+                        max: audioPlayer.devices.length.toDouble(),
+                        onChanged: (value) {
+                          this.setState(() {
+                            /// Changing player volume.
+                            this
+                                .audioPlayer
+                                .setDevice(deviceIndex: value.toInt());
+                          });
+                        }),
                   ],
                 )),
             Padding(
@@ -189,19 +209,6 @@ class PlayerState extends State<Player> {
                           this.setState(() {
                             /// Changing player volume.
                             this.audioPlayer.setWaveSampleRate(value.toInt());
-                          });
-                        }),
-                    Slider(
-                        divisions: 4,
-                        value: audioPlayer.deviceIndex.toDouble(),
-                        min: 0,
-                        max: 3,
-                        onChanged: (value) {
-                          this.setState(() {
-                            /// Changing player volume.
-                            this
-                                .audioPlayer
-                                .setDevice(deviceIndex: value.toInt());
                           });
                         }),
                   ],
