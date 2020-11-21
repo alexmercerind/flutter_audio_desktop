@@ -69,7 +69,7 @@ namespace
         playerID = std::get<int>(encodedID->second);
       }
       // Map debug status
-      int debug = false;
+      bool debug = false;
       auto encodedDebug = arguments->find(flutter::EncodableValue("debug"));
       if (encodedDebug != arguments->end())
       {

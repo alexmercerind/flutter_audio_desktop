@@ -7,9 +7,9 @@ namespace Audio
 
     AudioPlayerManager *audioPlayerManager = new AudioPlayerManager();
 
-    void initPlayer(int id, int debug)
+    void initPlayer(int id, bool debug)
     {
-        AudioPlayer *audioPlayer = new AudioPlayer(id, static_cast<bool>(debug));
+        AudioPlayer *audioPlayer = new AudioPlayer(id, debug);
         audioPlayerManager->players.insert(audioPlayerManager->players.end(), audioPlayer);
     }
 
@@ -17,6 +17,12 @@ namespace Audio
     {
         AudioPlayer *audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->setDevice(deviceIndex);
+    }
+
+    int getDeviceCount()
+    {
+        AudioPlayer *audioPlayer = audioPlayerManager->players.at(0);
+        return audioPlayer->playbackDeviceCount;
     }
 
     void loadPlayer(int id, const char *fileLocation)

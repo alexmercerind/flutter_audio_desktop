@@ -28,11 +28,7 @@ class AudioPlayer {
   ///
   ///     AudioPlayer audioPlayer = new AudioPlayer(debug: true);
   AudioPlayer({this.debug = false, this.id = 0}) {
-    if (this.debug) {
-      _channel.invokeMethod('init', {'id': id, 'debug': true});
-    } else {
-      _channel.invokeMethod('init', {'id': id, 'debug': false});
-    }
+    _channel.invokeMethod('init', {'id': id, 'debug': debug});
   }
 
   /// ## Changing Playback Device
