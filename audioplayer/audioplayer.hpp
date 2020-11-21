@@ -35,7 +35,6 @@ struct AudioDevice
     std::string name;
 };
 
-
 class AudioPlayerInternal
 {
 public:
@@ -69,7 +68,7 @@ public:
         {
         }
         this->deviceCount = 0;
-        for(int index = 0; index < this->playbackDeviceCount; index += 1)
+        for (ma_uint32 index = 0; index < this->playbackDeviceCount; index += 1)
         {
             this->deviceCount += 1;
         }
@@ -85,11 +84,9 @@ public:
             {
                 devices[count].name = this->pPlaybackDeviceInfos[index].name;
                 devices[count].id = index;
-               // std::cout << index << " - " << this->pPlaybackDeviceInfos[index].name << "*" <<"\n";;
             }
-                devices[index].name = this->pPlaybackDeviceInfos[index].name;
-                devices[index].id = index;
-               // std::cout << index << " - " << this->pPlaybackDeviceInfos[index].name << "\n";
+            devices[index].name = this->pPlaybackDeviceInfos[index].name;
+            devices[index].id = index;
         }
     }
 
@@ -130,6 +127,7 @@ public:
         ma_device_init(NULL, &this->deviceConfig, &this->device);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Channel Count: " << this->decoder.outputChannels << std::endl;
             //std::cout << "Sample Rate  : " << this->decoder.outputSampleRate << std::endl;
         }
@@ -170,6 +168,7 @@ public:
         this->deviceIndex = index;
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Selected Device: " << this->deviceIndex << " - " << this->pPlaybackDeviceInfos[deviceIndex].name << std::endl;
         }
     }
@@ -180,6 +179,7 @@ public:
         this->initDevice();
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Loaded File: " << file << std::endl;
         }
     }
@@ -190,6 +190,7 @@ public:
 
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << std::boolalpha;
             //std::cout << "Started Playback. await = " << await << std::endl;
         }
@@ -202,6 +203,7 @@ public:
         ma_device_stop(&this->device);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Paused Playback." << std::endl;
         }
     }
@@ -212,6 +214,7 @@ public:
         ma_decoder_uninit(&this->decoder);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Stopped Playback." << std::endl;
         }
     }
@@ -220,6 +223,7 @@ public:
     {
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Audio Duration: " << this->audioDurationMilliseconds << " ms" << std::endl;
         }
         return this->audioDurationMilliseconds;
@@ -231,6 +235,7 @@ public:
         ma_decoder_seek_to_pcm_frame(&decoder, timeFrames);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Set Position: " << timeMilliseconds << " ms" << std::endl;
         }
     }
@@ -242,9 +247,22 @@ public:
         int positionMilliseconds = ma_calculate_buffer_size_in_milliseconds_from_frames(static_cast<int>(positionFrames), this->sampleRate);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Current Position: " << positionMilliseconds << " ms" << std::endl;
         }
         return positionMilliseconds;
+    }
+    
+    float getVolume()
+    {
+        float volume;
+        ma_device_get_master_volume(&this->device, &volume);
+        if (this->debug)
+        {
+            // TODO: Move debug output to message channel
+            //std::cout << "Current Volume: " << volume << std::endl;
+        }
+        return volume;
     }
 
     void setVolume(double volume)
@@ -252,6 +270,7 @@ public:
         ma_device_set_master_volume(&this->device, static_cast<float>(volume));
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Set Volume: " << volume << std::endl;
         }
     }
@@ -299,17 +318,6 @@ public:
                                     this->sampleRate, maWaveType, amplitude, frequency);
         ma_waveform_init(&this->sineWaveConfig, &this->sineWave);
         this->initDeviceWave();
-    }
-
-    float getVolume()
-    {
-        float volume;
-        ma_device_get_master_volume(&this->device, &volume);
-        if (this->debug)
-        {
-            //std::cout << "Current Volume: " << volume << std::endl;
-        }
-        return volume;
     }
 };
 

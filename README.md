@@ -25,6 +25,11 @@ dependencies:
 // Note: You must provide new IDs to additional instances.
 var audioPlayer = new AudioPlayer(id: 0);
 
+// See a list of available system audio devices.
+// You can then change the device with setDevice,
+// and the ID included in the returned map.
+Map<String, dynamic> result = await audioPlayer.getDevices();
+
 // Load audio file
 audioPlayer.load('/home/alexmercerind/music.mp3');
 
