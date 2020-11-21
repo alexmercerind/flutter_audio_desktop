@@ -395,6 +395,29 @@ namespace
       Audio::setWaveSampleRate(playerID, waveSampleRate);
 
       result->Success(flutter::EncodableValue(nullptr));
+    }else if (method_call.method_name() == "setWaveType")
+    {
+      // Get args
+      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+
+      // Map Player ID
+      int playerID = 0;
+      auto encodedID = arguments->find(flutter::EncodableValue("id"));
+      if (encodedID != arguments->end())
+      {
+        playerID = std::get<int>(encodedID->second);
+      }
+
+      // Map volume
+      int waveType = 0;
+      auto encodedWaveType = arguments->find(flutter::EncodableValue("wave_type"));
+      if (encodedWaveType != arguments->end())
+      {
+        waveType = std::get<int>(encodedWaveType->second);
+      }
+      Audio::setWaveType(playerID, waveType);
+
+      result->Success(flutter::EncodableValue(nullptr));
     }
 
     else

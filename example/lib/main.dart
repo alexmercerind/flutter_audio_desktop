@@ -37,11 +37,11 @@ class PlayerState extends State<Player> {
             if (audioPlayer.isPaused) {
               /// Playing loaded audio file.
               this.audioPlayer.play();
-              this.audioPlayer2.play();
+              //this.audioPlayer2.play();
             } else if (audioPlayer.isPlaying) {
               /// Pausing playback of loaded audio file.
               this.audioPlayer.pause();
-              this.audioPlayer2.pause();
+              //this.audioPlayer2.pause();
             }
           }
         },
@@ -209,6 +209,17 @@ class PlayerState extends State<Player> {
                           this.setState(() {
                             /// Changing player volume.
                             this.audioPlayer.setWaveSampleRate(value.toInt());
+                          });
+                        }),
+                    Slider(
+                        divisions: 4,
+                        value: audioPlayer.waveType.toDouble(),
+                        min: 0,
+                        max: 4,
+                        onChanged: (value) {
+                          this.setState(() {
+                            /// Changing player volume.
+                            this.audioPlayer.setWaveType(value.toInt());
                           });
                         }),
                   ],
