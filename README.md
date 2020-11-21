@@ -22,7 +22,15 @@ dependencies:
 
 ```dart
 // Start AudioPlayer and provide int for id.
+// Note: You must provide new IDs to additional instances.
 var audioPlayer = new AudioPlayer(id: 0);
+
+// See a list of available system audio devices.
+// You can then change the device with setDevice,
+// and the ID included in the returned map.
+Map<String, dynamic> result = await audioPlayer.getDevices();
+// or if you don't need to refresh, access from
+audioPlayer.devices
 
 // Load audio file
 audioPlayer.load('/home/alexmercerind/music.mp3');
@@ -49,6 +57,19 @@ Timer(Duration(seconds: 10), () {
     audioPlayer.pause();
     print('Playback of audio stopped after 10 seconds.');
 }
+
+// Load wave
+audioPlayer.loadWave(amplitude, frequency, type)
+
+// Set frequency
+audioPlayer.setWaveFrequency(double frequency);
+
+// Set Amplitude
+audioPlayer.setWaveAmplitude(double amplitude);
+
+// Set Sample Rate
+audioPlayer.setWaveSampleRate(int sampleRate)
+
 ```
 
 You can see [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) simple example app, if you are confused with the usage.

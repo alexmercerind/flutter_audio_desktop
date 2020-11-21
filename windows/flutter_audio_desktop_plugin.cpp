@@ -69,7 +69,7 @@ namespace
         playerID = std::get<int>(encodedID->second);
       }
       // Map debug status
-      int debug = false;
+      bool debug = false;
       auto encodedDebug = arguments->find(flutter::EncodableValue("debug"));
       if (encodedDebug != arguments->end())
       {
@@ -80,7 +80,24 @@ namespace
 
       result->Success(flutter::EncodableValue(nullptr));
     }
+    else if (method_call.method_name() == "getDevices")
+    {
+      // Map Device Index
+      int count = Audio::getDeviceCount();
+      AudioDevice *devices = new AudioDevice[count + 1];
+      Audio::getDevices(devices);
 
+      auto deviceInfo = flutter::EncodableMap();
+      for (int i = 0; i < count; i++)
+      {
+        deviceInfo.insert_or_assign(flutter::EncodableValue(std::to_string(i).c_str()),
+                                    flutter::EncodableValue(devices[i].name.c_str()));
+      }
+      deviceInfo.insert_or_assign(flutter::EncodableValue("default"),
+                                  flutter::EncodableValue(devices[count].id));
+
+      result->Success(flutter::EncodableValue(deviceInfo));
+    }
     else if (method_call.method_name() == "setDevice")
     {
       const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());

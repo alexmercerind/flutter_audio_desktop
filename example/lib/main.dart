@@ -64,11 +64,8 @@ class PlayerState extends State<Player> {
                   size: 28,
                 ),
                 onPressed: () async {
-                  audioPlayer.setDevice(deviceIndex: 2);
-                  audioPlayer2.setDevice(deviceIndex: 2);
-
-                  audioPlayer.loadWave(0.2, 220, 3);
-                  //audioPlayer2.loadWave(0.2, 700, 0);
+                  audioPlayer.loadWave(0.2, 400, 0);
+                  audioPlayer2.loadWave(0.2, 700, 0);
                 },
               ),
             ]),
@@ -101,9 +98,6 @@ class PlayerState extends State<Player> {
                     ),
                     tooltip: 'Load Audio',
                     onPressed: () async {
-                      /// Setting playback device manually (if you have more than one playback device).
-                      audioPlayer.setDevice(deviceIndex: 2);
-
                       /// Loading an audio file into the player.
                       bool result =
                           await audioPlayer.load(this._textFieldValue);
@@ -138,6 +132,26 @@ class PlayerState extends State<Player> {
                           this.setState(() {
                             /// Changing player volume.
                             this.audioPlayer.setVolume(value);
+                          });
+                        }),
+                    Icon(
+                      Icons.device_hub,
+                      size: 36,
+                      color: Colors.blue,
+                    ),
+                    Slider(
+                        divisions: audioPlayer.devices.length > 0
+                            ? audioPlayer.devices.length
+                            : 1,
+                        value: audioPlayer.deviceIndex.toDouble(),
+                        min: 0,
+                        max: audioPlayer.devices.length.toDouble(),
+                        onChanged: (value) {
+                          this.setState(() {
+                            /// Changing player volume.
+                            this
+                                .audioPlayer
+                                .setDevice(deviceIndex: value.toInt());
                           });
                         }),
                   ],

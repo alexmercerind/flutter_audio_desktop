@@ -26,15 +26,14 @@ static void flutter_audio_desktop_plugin_handle_method_call(
 
   if (strcmp(method, "init") == 0)
   {
-    const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
-    int debug = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("debug")));
+    int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
+    bool debug = fl_value_get_bool(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("debug")));
 
     Audio::initPlayer(id, debug);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
-
-  if (strcmp(method, "setDevice") == 0)
+  else if (strcmp(method, "setDevice") == 0)
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
     int deviceIndex = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("device_index")));
@@ -112,16 +111,41 @@ static void flutter_audio_desktop_plugin_handle_method_call(
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(playerPostionResponse));
   }
-
   else if (strcmp(method, "setPosition") == 0)
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
     // in Miliseconds
-    int duration = fl_value_get_float(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("duration")));
+    int duration = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("duration")));
 
     Audio::setPosition(id, duration);
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
+  }
+  else if (strcmp(method, "getDevices") == 0)
+  {
+    // Get count, new array, fill array
+    int count = Audio::getDeviceCount();
+    AudioDevice* devices = new AudioDevice[count + 1];
+    Audio::getDevices(devices);
+
+    // Map for flutter
+    g_autoptr(FlValue) deviceInfo = fl_value_new_map();
+
+    // Fill Map
+    for (int i = 0; i < count; i++)
+    {
+	        const char *c = devices[i].name.c_str();        
+          fl_value_set_string_take(
+          deviceInfo, std::to_string(i).c_str(),
+          fl_value_new_string(c));
+    }
+    
+    // Set default
+    fl_value_set_string_take(
+        deviceInfo, "default",
+        fl_value_new_int(devices[count].id));
+
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(deviceInfo));
   }
   else if (strcmp(method, "setWaveAmplitude") == 0)
   {
@@ -145,7 +169,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   else if (strcmp(method, "setWaveSampleRate") == 0)
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
-    const int sampleRate = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("sampleRate")));
+    const int sampleRate = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("sample_rate")));
 
     Audio::setWaveSampleRate(id, sampleRate);
 
