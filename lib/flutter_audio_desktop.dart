@@ -10,6 +10,7 @@ final MethodChannel _channel = MethodChannel('flutter_audio_desktop');
 class AudioPlayer {
   final int id;
   final bool debug;
+  int deviceIndex = 0;
   bool isLoaded = false;
   bool isPlaying = false;
   bool isPaused = false;
@@ -19,6 +20,7 @@ class AudioPlayer {
   double waveFrequency = 440;
   int waveSampleRate = 44800;
   List<bool> _playerState = [false, false, false, true];
+  Map<dynamic, dynamic> devices = new Map<dynamic, dynamic>();
 
   /// ## Starting Audio Service
   ///
@@ -28,24 +30,42 @@ class AudioPlayer {
   ///
   ///     AudioPlayer audioPlayer = new AudioPlayer(debug: true);
   AudioPlayer({this.debug = false, this.id = 0}) {
-    if (this.debug) {
-      _channel.invokeMethod('init', {'id': id, 'debug': true});
+    _channel.invokeMethod('init', {'id': id, 'debug': debug});
+    if (debug) {
+      getDevices(printDebug: true);
     } else {
-      _channel.invokeMethod('init', {'id': id, 'debug': false});
+      getDevices(printDebug: false);
     }
   }
 
-  /// ## Changing Playback Device
+  /// ## Get Audio Devices
   ///
-  ///     await audioPlayer.setDevice(deviceIndex: 0);
+  ///     Map<String,dynamic> audioDevices = await audioPlayer.getDevices();
   ///
-  /// NOTE: This method must be called before [load] method.
+  /// The key of the default device can be found at the "default" key
+  ///
+  ///  Results in `Future<Duration>`.
+  Future<dynamic> getDevices({bool printDebug = false}) async {
+    devices = await _channel.invokeMethod('getDevices');
+    deviceIndex = devices['default'];
+    if (printDebug) {
+      print("Default: " + deviceIndex.toString());
+      print(devices);
+    }
+    return devices;
+  }
+
+  /// ## Change Playback Device
+  ///
+  ///     await audioPlayer.setDevice(deviceIndex: await GetDevices()['default']);
   ///
   /// This method might be useful, if your device has more than one available playback devices.
-  void setDevice({int deviceIndex = 0}) => _channel
-      .invokeMethod('setDevice', {'id': id, 'device_index': deviceIndex});
+  void setDevice({int deviceIndex = 0}) {
+    this.deviceIndex = deviceIndex;
+    _channel.invokeMethod('setDevice', {'id': id, 'device_index': deviceIndex});
+  }
 
-  /// ## Loading Audio File
+  /// ## Load Audio File
   ///
   ///     await audioPlayer.load('/home/alexmercerind/music.mp3');
   ///
@@ -80,7 +100,7 @@ class AudioPlayer {
     }
   }
 
-  /// ## Playing Loaded Audio File
+  /// ## Play Loaded Audio File
   ///
   ///     await audioPlayer.play();
   ///
@@ -103,7 +123,7 @@ class AudioPlayer {
     return success;
   }
 
-  /// ## Loading Waves
+  /// ## Load Waveform Synthesizer
   ///
   ///  Results in `Future<true>`, if the wave is successfully loaded.
   ///
@@ -143,7 +163,7 @@ class AudioPlayer {
     return success;
   }
 
-  /// ## Pausing Loaded Audio File
+  /// ## Pause Audio
   ///
   ///     await audioPlayer.pause();
   ///
@@ -164,7 +184,7 @@ class AudioPlayer {
     }
   }
 
-  /// ## Unloading Audio File
+  /// ## Unload Audio File
   ///
   ///     await audioPlayer.pause();
   ///
@@ -190,7 +210,7 @@ class AudioPlayer {
     }
   }
 
-  /// ## Getting Audio File Duration
+  /// ## Gets Audio File Duration
   ///
   ///     Duration audioDuration = await audioPlayer.getDuration();
   ///
@@ -206,7 +226,7 @@ class AudioPlayer {
     }
   }
 
-  /// ## Getting Audio Playback Position
+  /// ## Gets Audio Playback Position
   ///
   ///     Duration audioPosition = await audioPlayer.getPosition();
   ///
@@ -226,7 +246,7 @@ class AudioPlayer {
     }
   }
 
-  /// ## Setting Audio Playback Position
+  /// ## Sets Audio Playback Position
   ///
   ///     await audioPlayer.setPosition(Duration(seconds: 18));
   ///
@@ -243,7 +263,7 @@ class AudioPlayer {
     }
   }
 
-  /// ## Setting Audio Playback Volume
+  /// ## Sets Audio Playback Volume
   ///
   ///     audioPlayer.setVolume(0.25);
   ///
@@ -255,18 +275,39 @@ class AudioPlayer {
     this.volume = volume;
   }
 
+  /// ## Sets Audio Wave Amplitude
+  ///
+  ///     audioPlayer.setWaveAmplitude(0.25);
+  ///
+  /// You can access the amplitude of the wave anytime later on.
+  ///
+  ///     double currentAmplitude = audioPlayer.waveAmplitude;
   void setWaveAmplitude(double amplitude) {
     _channel
         .invokeMethod('setWaveAmplitude', {'id': id, 'amplitude': amplitude});
     this.waveAmplitude = amplitude;
   }
 
+  /// ## Sets Audio Wave Frequency
+  ///
+  ///     audioPlayer.setWaveFrequency(528);
+  ///
+  /// You can access the frequency of the wave anytime later on.
+  ///
+  ///     double currentFrequency = audioPlayer.waveFrequency;
   void setWaveFrequency(double frequency) {
     _channel
         .invokeMethod('setWaveFrequency', {'id': id, 'frequency': frequency});
     this.waveFrequency = frequency;
   }
 
+  /// ## Sets Audio Wave Sample Rate
+  ///
+  ///     audioPlayer.setWaveSampleRate(44800);
+  ///
+  /// You can access the sample rate of the wave anytime later on.
+  ///
+  ///     double currentSampleRate = audioPlayer.waveSampleRate;
   void setWaveSampleRate(int sampleRate) {
     _channel.invokeMethod(
         'setWaveSampleRate', {'id': id, 'sample_rate': sampleRate});

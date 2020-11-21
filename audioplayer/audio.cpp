@@ -7,10 +7,23 @@ namespace Audio
 
     AudioPlayerManager *audioPlayerManager = new AudioPlayerManager();
 
-    void initPlayer(int id, int debug)
+    void initPlayer(int id, bool debug)
     {
-        AudioPlayer *audioPlayer = new AudioPlayer(id, static_cast<bool>(debug));
+        AudioPlayer *audioPlayer = new AudioPlayer(id, debug);
+        audioPlayer->findDevices();
         audioPlayerManager->players.insert(audioPlayerManager->players.end(), audioPlayer);
+    }
+
+    int getDeviceCount()
+    {
+        AudioPlayer *audioPlayer = audioPlayerManager->players.at(0);
+        return audioPlayer->playbackDeviceCount;
+    }
+
+    void getDevices(AudioDevice devices[])
+    {
+        AudioPlayer *audioPlayer = audioPlayerManager->players.at(0);
+        audioPlayer->getDevices(devices);
     }
 
     void setDevice(int id, int deviceIndex)
