@@ -33,8 +33,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_null()));
   }
-
-  if (strcmp(method, "setDevice") == 0)
+  else if (strcmp(method, "setDevice") == 0)
   {
     const int id = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("id")));
     int deviceIndex = fl_value_get_int(fl_value_lookup(fl_method_call_get_args(method_call), fl_value_new_string("device_index")));
@@ -124,22 +123,27 @@ static void flutter_audio_desktop_plugin_handle_method_call(
   }
   else if (strcmp(method, "getDevices") == 0)
   {
+    // Get count, new array, fill array
     int count = Audio::getDeviceCount();
-    AudioDevice devices[count + 1];
-    Audio::getDevices(&devices);
+    AudioDevice* devices = new AudioDevice[count + 1];
+    Audio::getDevices(devices);
 
+    // Map for flutter
     g_autoptr(FlValue) deviceInfo = fl_value_new_map();
 
-    for (int i = 1; i < count; i++)
+    // Fill Map
+    for (int i = 0; i < count; i++)
     {
-      fl_value_set_string_take(
-          deviceInfo, std::to_string(i),
-          fl_value_new_string(devices[i].name));
+	        const char *c = devices[i].name.c_str();        
+          fl_value_set_string_take(
+          deviceInfo, std::to_string(i).c_str(),
+          fl_value_new_string(c));
     }
-
+    
+    // Set default
     fl_value_set_string_take(
         deviceInfo, "default",
-        fl_value_new_string(devices[count].id));
+        fl_value_new_int(devices[count].id));
 
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(deviceInfo));
   }

@@ -29,15 +29,11 @@ void dataCallbackWave(ma_device *pDevice, void *pOutput, const void *pInput, ma_
     (void)pInput; /* Unused. */
 }
 
-struct AudioPlayerManager
-{
-    std::vector<AudioPlayer *> players;
-};
-
 struct AudioDevice
 {
     int id;
     std::string name;
+    ma_device_id deviceID;
 };
 
 class AudioPlayerInternal
@@ -47,12 +43,16 @@ public:
     int channelCount = 2;
     int sampleRate = 48000;
     int deviceIndex = 0;
+    int deviceCount = 0;
+    bool fileLoaded = false;
+    bool waveLoaded = false;
+    bool isPlaying = false;
 
     ma_device device;
     ma_device_config deviceConfig;
     ma_decoder decoder;
     ma_device_info *pPlaybackDeviceInfos;
-    ma_uint32 playbackDeviceCount;
+    ma_uint32 playbackDeviceCount = 0;
     ma_waveform_config sineWaveConfig;
     ma_waveform sineWave;
 
@@ -60,7 +60,7 @@ public:
     int id;
     int audioDurationMilliseconds;
 
-    void findDevices()
+    int findDevices()
     {
         ma_context context;
         if (ma_context_init(NULL, 0, NULL, &context) != MA_SUCCESS)
@@ -71,45 +71,44 @@ public:
         if (ma_context_get_devices(&context, &this->pPlaybackDeviceInfos, &this->playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount) != MA_SUCCESS)
         {
         }
+        this->deviceCount = 0;
+        for (ma_uint32 index = 0; index < this->playbackDeviceCount; index += 1)
+        {
+            this->deviceCount += 1;
+        }
+        return this->deviceCount;
     }
 
-    void getDevices(AudioDevice* devices)
+    void getDevices(AudioDevice devices[])
     {
-        findDevices();
-        for (ma_uint32 index = 0; index < this->playbackDeviceCount; index++)
+        int count = this->deviceCount;
+        for (int index = 0; index < count; index += 1)
         {
             if (this->pPlaybackDeviceInfos[index].isDefault)
             {
-                AudioDevice device;
-                device.name = "default";
-                device.id = index;
-                devices[this->playbackDeviceCount] = device;
-                //std::cout << index << " - " << this->pPlaybackDeviceInfos[index].name << "*" << std::endl;
+                devices[count].name = this->pPlaybackDeviceInfos[index].name;
+                devices[count].id = index;
+                devices[count].deviceID = this->pPlaybackDeviceInfos[index].id;
             }
-            else
-            {
-                AudioDevice device;
-                device.name = this->pPlaybackDeviceInfos[index].name;
-                device.id = index;
-                devices[index] = device;
-                //std::cout << index << " - " << this->pPlaybackDeviceInfos[index].name << std::endl;
-            }
+            devices[index].name = this->pPlaybackDeviceInfos[index].name;
+            devices[index].id = index;
+            devices[index].deviceID = this->pPlaybackDeviceInfos[index].id;
         }
     }
 
     ma_device_info getDefaultDevice()
     {
         findDevices();
-        ma_device_info default = this->pPlaybackDeviceInfos[0];
+        ma_device_info defaultDevice = this->pPlaybackDeviceInfos[0];
         for (ma_uint32 index = 0; index < this->playbackDeviceCount; index++)
         {
             // default becomes system default
             if (this->pPlaybackDeviceInfos[index].isDefault)
             {
-                default = this->pPlaybackDeviceInfos[index];
+                defaultDevice = this->pPlaybackDeviceInfos[index];
             }
         }
-        return default;
+        return defaultDevice;
     }
 
     void loadFile(const char *file)
@@ -121,9 +120,8 @@ public:
         this->audioDurationMilliseconds = ma_calculate_buffer_size_in_milliseconds_from_frames(static_cast<int>(audioDurationFrames), this->sampleRate);
     }
 
-    void initDevice()
+    void initDevice(ma_device_id selectedDeviceId)
     {
-        ma_device_id selectedDeviceId = this->getDefaultDevice().id;
         this->deviceConfig = ma_device_config_init(ma_device_type_playback);
         this->deviceConfig.playback.pDeviceID = &selectedDeviceId;
         this->deviceConfig.playback.format = this->decoder.outputFormat;
@@ -134,15 +132,15 @@ public:
         ma_device_init(NULL, &this->deviceConfig, &this->device);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Channel Count: " << this->decoder.outputChannels << std::endl;
             //std::cout << "Sample Rate  : " << this->decoder.outputSampleRate << std::endl;
         }
     }
 
-    void initDeviceWave()
+    void initDeviceWave(ma_device_id selectedDeviceId)
     {
 
-        ma_device_id selectedDeviceId = this->getDefaultDevice().id;
         this->deviceConfig = ma_device_config_init(ma_device_type_playback);
         this->deviceConfig.playback.pDeviceID = &selectedDeviceId;
         this->deviceConfig.playback.format = this->sampleFormat;
@@ -167,34 +165,68 @@ public:
     {
         this->debug = debug;
         this->id = id;
-        this->showDevices();
     }
 
     void setDevice(int index)
     {
-        this->deviceIndex = index;
-        if (this->debug)
+        if (this->fileLoaded == true || this->waveLoaded == true)
         {
-            //std::cout << "Selected Device: " << this->deviceIndex << " - " << this->pPlaybackDeviceInfos[deviceIndex].name << std::endl;
+            // Get count, new array, fill array
+            int count = this->findDevices();
+            AudioDevice *devices = new AudioDevice[count + 1];
+            this->getDevices(devices);
+            ma_device_stop(&this->device);
+            ma_device_uninit(&this->device);
+
+            if (this->fileLoaded == true)
+            {
+                this->initDevice(devices[index].deviceID);
+            }
+            else if (this->waveLoaded == true)
+            {
+                this->initDeviceWave(devices[index].deviceID);
+            }
+
+            if (this->isPlaying == true)
+            {
+                ma_device_start(&this->device);
+            }
+            else
+            {
+                ma_device_stop(&this->device);
+            }
+
+            this->deviceIndex = index;
+            if (this->debug)
+            {
+                // TODO: Move debug output to message channel
+                //std::cout << "Selected Device: " << this->deviceIndex << " - " << this->pPlaybackDeviceInfos[deviceIndex].name << std::endl;
+            }
         }
     }
 
     void load(const char *file)
     {
         this->loadFile(file);
-        this->initDevice();
+        ma_device_id selectedDeviceId = this->getDefaultDevice().id;
+        this->initDevice(selectedDeviceId);
+        this->waveLoaded = false;
+        this->fileLoaded = true;
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Loaded File: " << file << std::endl;
         }
     }
 
     void play(bool await = false)
     {
+        this->isPlaying = true;
         ma_device_start(&this->device);
 
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << std::boolalpha;
             //std::cout << "Started Playback. await = " << await << std::endl;
         }
@@ -204,19 +236,23 @@ public:
 
     void pause()
     {
+        this->isPlaying = false;
         ma_device_stop(&this->device);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Paused Playback." << std::endl;
         }
     }
 
     void stop()
     {
+        this->isPlaying = false;
         ma_device_stop(&this->device);
-        ma_decoder_uninit(&this->decoder);
+        //ma_decoder_uninit(&this->decoder);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Stopped Playback." << std::endl;
         }
     }
@@ -225,6 +261,7 @@ public:
     {
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Audio Duration: " << this->audioDurationMilliseconds << " ms" << std::endl;
         }
         return this->audioDurationMilliseconds;
@@ -236,6 +273,7 @@ public:
         ma_decoder_seek_to_pcm_frame(&decoder, timeFrames);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Set Position: " << timeMilliseconds << " ms" << std::endl;
         }
     }
@@ -247,9 +285,22 @@ public:
         int positionMilliseconds = ma_calculate_buffer_size_in_milliseconds_from_frames(static_cast<int>(positionFrames), this->sampleRate);
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Current Position: " << positionMilliseconds << " ms" << std::endl;
         }
         return positionMilliseconds;
+    }
+
+    float getVolume()
+    {
+        float volume;
+        ma_device_get_master_volume(&this->device, &volume);
+        if (this->debug)
+        {
+            // TODO: Move debug output to message channel
+            //std::cout << "Current Volume: " << volume << std::endl;
+        }
+        return volume;
     }
 
     void setVolume(double volume)
@@ -257,6 +308,7 @@ public:
         ma_device_set_master_volume(&this->device, static_cast<float>(volume));
         if (this->debug)
         {
+            // TODO: Move debug output to message channel
             //std::cout << "Set Volume: " << volume << std::endl;
         }
     }
@@ -303,17 +355,14 @@ public:
             ma_waveform_config_init(this->sampleFormat, this->channelCount,
                                     this->sampleRate, maWaveType, amplitude, frequency);
         ma_waveform_init(&this->sineWaveConfig, &this->sineWave);
-        this->initDeviceWave();
+        ma_device_id selectedDeviceId = this->getDefaultDevice().id;
+        this->initDeviceWave(selectedDeviceId);
+        this->waveLoaded = true;
+        this->fileLoaded = false;
     }
+};
 
-    float getVolume()
-    {
-        float volume;
-        ma_device_get_master_volume(&this->device, &volume);
-        if (this->debug)
-        {
-            //std::cout << "Current Volume: " << volume << std::endl;
-        }
-        return volume;
-    }
+struct AudioPlayerManager
+{
+    std::vector<AudioPlayer *> players;
 };
