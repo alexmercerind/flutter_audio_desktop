@@ -81,11 +81,21 @@ namespace
       result->Success(flutter::EncodableValue(nullptr));
     }
     else if (method_call.method_name() == "getDevices")
-    {
+    {            
+      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+
+      // Map Player ID
+      int playerID = 0;
+      auto encodedID = arguments->find(flutter::EncodableValue("id"));
+      if (encodedID != arguments->end())
+      {
+        playerID = std::get<int>(encodedID->second);
+      }
+      
       // Map Device Index
-      int count = Audio::getDeviceCount();
+      int count = Audio::getDeviceCount(playerID);
       AudioDevice *devices = new AudioDevice[count + 1];
-      Audio::getDevices(devices);
+      Audio::getDevices(playerID, devices);
 
       auto deviceInfo = flutter::EncodableMap();
       for (int i = 0; i < count; i++)
@@ -162,47 +172,6 @@ namespace
 
       result->Success(flutter::EncodableValue(nullptr));
     }
-    else if (method_call.method_name() == "loadWave")
-    {
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map amplitude
-      double amplitude = 0;
-      auto encodedAmplitude = arguments->find(flutter::EncodableValue("amplitude"));
-      if (encodedAmplitude != arguments->end())
-      {
-        amplitude = std::get<double>(encodedAmplitude->second);
-      }
-
-      // Map frequency
-      double frequency = 0;
-      auto encodedFrequency = arguments->find(flutter::EncodableValue("frequency"));
-      if (encodedFrequency != arguments->end())
-      {
-        frequency = std::get<double>(encodedFrequency->second);
-      }
-
-      // Map wave type
-      int waveType = 0;
-      auto encodedWaveType = arguments->find(flutter::EncodableValue("wave_type"));
-      if (encodedWaveType != arguments->end())
-      {
-        waveType = std::get<int>(encodedWaveType->second);
-      }
-
-      Audio::loadWave(playerID, amplitude, frequency, waveType);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-
     else if (method_call.method_name() == "pause")
     {
       // Get args
@@ -324,6 +293,52 @@ namespace
 
       result->Success(flutter::EncodableValue(nullptr));
     }
+    //
+    //
+    //  *** WAVES ***
+    //
+    //
+    else if (method_call.method_name() == "loadWave")
+    {
+      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+
+      // Map Player ID
+      int playerID = 0;
+      auto encodedID = arguments->find(flutter::EncodableValue("id"));
+      if (encodedID != arguments->end())
+      {
+        playerID = std::get<int>(encodedID->second);
+      }
+
+      // Map amplitude
+      double amplitude = 0;
+      auto encodedAmplitude = arguments->find(flutter::EncodableValue("amplitude"));
+      if (encodedAmplitude != arguments->end())
+      {
+        amplitude = std::get<double>(encodedAmplitude->second);
+      }
+
+      // Map frequency
+      double frequency = 0;
+      auto encodedFrequency = arguments->find(flutter::EncodableValue("frequency"));
+      if (encodedFrequency != arguments->end())
+      {
+        frequency = std::get<double>(encodedFrequency->second);
+      }
+
+      // Map wave type
+      int waveType = 0;
+      auto encodedWaveType = arguments->find(flutter::EncodableValue("wave_type"));
+      if (encodedWaveType != arguments->end())
+      {
+        waveType = std::get<int>(encodedWaveType->second);
+      }
+
+      Audio::loadWave(playerID, amplitude, frequency, waveType);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+
     else if (method_call.method_name() == "setWaveAmplitude")
     {
       // Get args
@@ -395,7 +410,8 @@ namespace
       Audio::setWaveSampleRate(playerID, waveSampleRate);
 
       result->Success(flutter::EncodableValue(nullptr));
-    }else if (method_call.method_name() == "setWaveType")
+    }
+    else if (method_call.method_name() == "setWaveType")
     {
       // Get args
       const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
@@ -416,6 +432,124 @@ namespace
         waveType = std::get<int>(encodedWaveType->second);
       }
       Audio::setWaveType(playerID, waveType);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+    //
+    //
+    //  *** NOISE ***
+    //
+    //
+    else if (method_call.method_name() == "loadNoise")
+    {
+      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+
+      // Map Player ID
+      int playerID = 0;
+      auto encodedID = arguments->find(flutter::EncodableValue("id"));
+      if (encodedID != arguments->end())
+      {
+        playerID = std::get<int>(encodedID->second);
+      }
+
+      // Map seed
+      int seed = 0;
+      auto encodedSeed = arguments->find(flutter::EncodableValue("seed"));
+      if (encodedSeed != arguments->end())
+      {
+        seed = std::get<int>(encodedSeed->second);
+      }
+
+      // Map amplitude
+      double amplitude = 0;
+      auto encodedAmplitude = arguments->find(flutter::EncodableValue("amplitude"));
+      if (encodedAmplitude != arguments->end())
+      {
+        amplitude = std::get<double>(encodedAmplitude->second);
+      }
+
+      // Map noise type
+      int noiseType = 0;
+      auto encodedNoiseType = arguments->find(flutter::EncodableValue("noise_type"));
+      if (encodedNoiseType != arguments->end())
+      {
+        noiseType = std::get<int>(encodedNoiseType->second);
+      }
+
+      Audio::loadNoise(playerID, seed, amplitude, noiseType);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+
+    else if (method_call.method_name() == "setNoiseAmplitude")
+    {
+      // Get args
+      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+
+      // Map Player ID
+      int playerID = 0;
+      auto encodedID = arguments->find(flutter::EncodableValue("id"));
+      if (encodedID != arguments->end())
+      {
+        playerID = std::get<int>(encodedID->second);
+      }
+
+      // Map volume
+      double amplitude = 0;
+      auto encodedAmplitude = arguments->find(flutter::EncodableValue("amplitude"));
+      if (encodedAmplitude != arguments->end())
+      {
+        amplitude = std::get<double>(encodedAmplitude->second);
+      }
+      Audio::setNoiseAmplitude(playerID, amplitude);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+    else if (method_call.method_name() == "setNoiseSeed")
+    {
+      // Get args
+      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+
+      // Map Player ID
+      int playerID = 0;
+      auto encodedID = arguments->find(flutter::EncodableValue("id"));
+      if (encodedID != arguments->end())
+      {
+        playerID = std::get<int>(encodedID->second);
+      }
+
+      // Map seed
+      int seed = 0;
+      auto encodedSeed = arguments->find(flutter::EncodableValue("seed"));
+      if (encodedSeed != arguments->end())
+      {
+        seed = std::get<int>(encodedSeed->second);
+      }
+      Audio::setNoiseSeed(playerID, seed);
+
+      result->Success(flutter::EncodableValue(nullptr));
+    }
+    else if (method_call.method_name() == "setNoiseType")
+    {
+      // Get args
+      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+
+      // Map Player ID
+      int playerID = 0;
+      auto encodedID = arguments->find(flutter::EncodableValue("id"));
+      if (encodedID != arguments->end())
+      {
+        playerID = std::get<int>(encodedID->second);
+      }
+
+      // Map noise type
+      int noiseType = 0;
+      auto encodedNoiseType = arguments->find(flutter::EncodableValue("noise_type"));
+      if (encodedNoiseType != arguments->end())
+      {
+        noiseType = std::get<int>(encodedNoiseType->second);
+      }
+      Audio::setNoiseType(playerID, noiseType);
 
       result->Success(flutter::EncodableValue(nullptr));
     }

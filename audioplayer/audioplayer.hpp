@@ -29,11 +29,30 @@ void dataCallbackWave(ma_device *pDevice, void *pOutput, const void *pInput, ma_
     (void)pInput; /* Unused. */
 }
 
+void dataCallbackNoise(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount)
+{
+    ma_noise *pNoise;
+
+    pNoise = (ma_noise *)pDevice->pUserData;
+    MA_ASSERT(pNoise != NULL);
+
+    ma_noise_read_pcm_frames(pNoise, pOutput, frameCount);
+
+    (void)pInput; /* Unused. */
+}
+
 struct AudioDevice
 {
     int id;
     std::string name;
     ma_device_id deviceID;
+};
+
+enum PlayerType
+{
+    AUDIOFILE,
+    WAVE,
+    NOISE
 };
 
 class AudioPlayerInternal
@@ -46,15 +65,21 @@ public:
     int deviceCount = 0;
     bool fileLoaded = false;
     bool waveLoaded = false;
+    bool noiseLoaded = false;
     bool isPlaying = false;
+    PlayerType type;
 
     ma_device device;
     ma_device_config deviceConfig;
     ma_decoder decoder;
     ma_device_info *pPlaybackDeviceInfos;
     ma_uint32 playbackDeviceCount = 0;
+
     ma_waveform_config sineWaveConfig;
     ma_waveform sineWave;
+
+    ma_noise_config noiseConfig;
+    ma_noise noise;
 
     bool debug;
     int id;
@@ -120,40 +145,36 @@ public:
         this->audioDurationMilliseconds = ma_calculate_buffer_size_in_milliseconds_from_frames(static_cast<int>(audioDurationFrames), this->sampleRate);
     }
 
-    void initDevice(ma_device_id selectedDeviceId)
+    void initDevice(ma_device_id selectedDeviceId, PlayerType initType)
     {
         this->deviceConfig = ma_device_config_init(ma_device_type_playback);
         this->deviceConfig.playback.pDeviceID = &selectedDeviceId;
-        this->deviceConfig.playback.format = this->decoder.outputFormat;
-        this->deviceConfig.playback.channels = this->decoder.outputChannels;
-        this->deviceConfig.sampleRate = this->decoder.outputSampleRate;
-        this->deviceConfig.dataCallback = dataCallback;
-        this->deviceConfig.pUserData = &this->decoder;
+        this->deviceConfig.playback.format = this->sampleFormat;
+        this->deviceConfig.playback.channels = this->channelCount;
+        this->deviceConfig.sampleRate = this->sampleRate;
+
+        switch (initType)
+        {
+        case AUDIOFILE:
+            this->deviceConfig.dataCallback = dataCallback;
+            this->deviceConfig.pUserData = &this->decoder;
+            break;
+        case WAVE:
+            this->deviceConfig.dataCallback = dataCallbackWave;
+            this->deviceConfig.pUserData = &this->sineWave;
+            break;
+        case NOISE:
+            this->deviceConfig.dataCallback = dataCallbackNoise;
+            this->deviceConfig.pUserData = &this->noise;
+            break;
+        }
+
         ma_device_init(NULL, &this->deviceConfig, &this->device);
         if (this->debug)
         {
             // TODO: Move debug output to message channel
             //std::cout << "Channel Count: " << this->decoder.outputChannels << std::endl;
             //std::cout << "Sample Rate  : " << this->decoder.outputSampleRate << std::endl;
-        }
-    }
-
-    void initDeviceWave(ma_device_id selectedDeviceId)
-    {
-
-        this->deviceConfig = ma_device_config_init(ma_device_type_playback);
-        this->deviceConfig.playback.pDeviceID = &selectedDeviceId;
-        this->deviceConfig.playback.format = this->sampleFormat;
-        this->deviceConfig.playback.channels = this->channelCount;
-        this->deviceConfig.sampleRate = this->sampleRate;
-        this->deviceConfig.dataCallback = dataCallbackWave;
-        this->deviceConfig.pUserData = &this->sineWave;
-        ma_device_init(NULL, &this->deviceConfig, &this->device);
-
-        if (this->debug)
-        {
-            //std::cout << "Channel Count: " << this->channelCount << std::endl;
-            //std::cout << "Sample Rate  : " << this->sampleRate << std::endl;
         }
     }
 };
@@ -169,7 +190,7 @@ public:
 
     void setDevice(int index)
     {
-        if (this->fileLoaded == true || this->waveLoaded == true)
+        if (this->fileLoaded == true || this->waveLoaded == true || this->noiseLoaded == true)
         {
             // Get count, new array, fill array
             int count = this->findDevices();
@@ -180,13 +201,15 @@ public:
 
             if (this->fileLoaded == true)
             {
-                this->initDevice(devices[index].deviceID);
+                this->initDevice(devices[index].deviceID, AUDIOFILE);
             }
             else if (this->waveLoaded == true)
             {
-                this->initDeviceWave(devices[index].deviceID);
+                this->initDevice(devices[index].deviceID, WAVE);
+            }else if (this->noiseLoaded == true)
+            {
+                this->initDevice(devices[index].deviceID, NOISE);
             }
-
             if (this->isPlaying == true)
             {
                 ma_device_start(&this->device);
@@ -209,8 +232,9 @@ public:
     {
         this->loadFile(file);
         ma_device_id selectedDeviceId = this->getDefaultDevice().id;
-        this->initDevice(selectedDeviceId);
+        this->initDevice(selectedDeviceId, AUDIOFILE);
         this->waveLoaded = false;
+        this->noiseLoaded = false;
         this->fileLoaded = true;
         if (this->debug)
         {
@@ -313,42 +337,11 @@ public:
         }
     }
 
-    void setWaveFrequency(double frequency)
-    {
-        ma_waveform_set_frequency(&this->sineWave, frequency);
-    }
-
-    void setWaveAmplitude(double amplitude)
-    {
-        ma_waveform_set_amplitude(&this->sineWave, amplitude);
-    }
-
-    void setWaveSampleRate(int waveSampleRate)
-    {
-        ma_waveform_set_sample_rate(&this->sineWave, waveSampleRate);
-    }
-    
-    void setWaveType(int waveType)
-    {
-        ma_waveform_type maWaveType = ma_waveform_type_sine;
-        switch (waveType)
-        {
-        case 0:
-            maWaveType = ma_waveform_type_sine;
-            break;
-        case 1:
-            maWaveType = ma_waveform_type_square;
-            break;
-        case 2:
-            maWaveType = ma_waveform_type_triangle;
-            break;
-        case 3:
-            maWaveType = ma_waveform_type_sawtooth;
-            break;
-        }
-
-        ma_waveform_set_type(&this->sineWave, maWaveType);
-    }
+    //
+    //
+    //  *** WAVES ***
+    //
+    //
 
     void loadWave(double amplitude, double frequency, int waveType)
     {
@@ -378,9 +371,114 @@ public:
                                     this->sampleRate, maWaveType, amplitude, frequency);
         ma_waveform_init(&this->sineWaveConfig, &this->sineWave);
         ma_device_id selectedDeviceId = this->getDefaultDevice().id;
-        this->initDeviceWave(selectedDeviceId);
-        this->waveLoaded = true;
+        this->initDevice(selectedDeviceId, WAVE);
+
         this->fileLoaded = false;
+        this->noiseLoaded = false;
+        this->waveLoaded = true;
+    }
+
+    void setWaveFrequency(double frequency)
+    {
+        ma_waveform_set_frequency(&this->sineWave, frequency);
+    }
+
+    void setWaveAmplitude(double amplitude)
+    {
+        ma_waveform_set_amplitude(&this->sineWave, amplitude);
+    }
+
+    void setWaveSampleRate(int waveSampleRate)
+    {
+        ma_waveform_set_sample_rate(&this->sineWave, waveSampleRate);
+    }
+
+    void setWaveType(int waveType)
+    {
+        ma_waveform_type maWaveType = ma_waveform_type_sine;
+        switch (waveType)
+        {
+        case 0:
+            maWaveType = ma_waveform_type_sine;
+            break;
+        case 1:
+            maWaveType = ma_waveform_type_square;
+            break;
+        case 2:
+            maWaveType = ma_waveform_type_triangle;
+            break;
+        case 3:
+            maWaveType = ma_waveform_type_sawtooth;
+            break;
+        }
+
+        ma_waveform_set_type(&this->sineWave, maWaveType);
+    }
+
+    //
+    //
+    //  *** NOISE ***
+    //
+    //
+
+    void loadNoise(double amplitude, int seed, int noiseType)
+    {
+        // 0 = white
+        // 1 = pink
+        // 2 = brownian
+
+        ma_noise_type maNoiseType = ma_noise_type_white;
+        switch (noiseType)
+        {
+        case 0:
+            maNoiseType = ma_noise_type_white;
+            break;
+        case 1:
+            maNoiseType = ma_noise_type_pink;
+            break;
+        case 2:
+            maNoiseType = ma_noise_type_brownian;
+            break;
+        }
+
+        this->noiseConfig =
+            ma_noise_config_init(this->sampleFormat, this->channelCount,
+                                 maNoiseType, seed, amplitude);
+        ma_noise_init(&this->noiseConfig, &this->noise);
+        ma_device_id selectedDeviceId = this->getDefaultDevice().id;
+        this->initDevice(selectedDeviceId, NOISE);
+        this->fileLoaded = false;
+        this->waveLoaded = false;
+        this->noiseLoaded = true;
+    }
+
+    void setNoiseSeed(int seed)
+    {
+        ma_noise_set_seed(&this->noise, seed);
+    }
+
+    void setNoiseAmplitude(double amplitude)
+    {
+        ma_noise_set_amplitude(&this->noise, amplitude);
+    }
+
+    void setNoiseType(int noiseType)
+    {
+        ma_noise_type maNoiseType = ma_noise_type_white;
+        switch (noiseType)
+        {
+        case 0:
+            maNoiseType = ma_noise_type_white;
+            break;
+        case 1:
+            maNoiseType = ma_noise_type_pink;
+            break;
+        case 2:
+            maNoiseType = ma_noise_type_brownian;
+            break;
+        }
+
+        ma_noise_set_type(&this->noise, maNoiseType);
     }
 };
 
