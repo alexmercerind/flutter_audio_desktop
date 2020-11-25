@@ -10,18 +10,23 @@ final MethodChannel _channel = MethodChannel('flutter_audio_desktop');
 class AudioPlayer {
   final int id;
   final bool debug;
+  List<bool> _playerState = [false, false, false, true];
+  Map<dynamic, dynamic> devices = new Map<dynamic, dynamic>();
   int deviceIndex = 0;
   bool isLoaded = false;
   bool isPlaying = false;
   bool isPaused = false;
   bool isStopped = true;
   double volume = .5;
+
   double waveAmplitude = 0.1;
   double waveFrequency = 440;
   int waveSampleRate = 44800;
   int waveType = 0;
-  List<bool> _playerState = [false, false, false, true];
-  Map<dynamic, dynamic> devices = new Map<dynamic, dynamic>();
+
+  int noiseSeed = 0;
+  double noiseAmplitude = 0.1;
+  int noiseType = 0;
 
   /// ## Starting Audio Service
   ///
@@ -47,7 +52,7 @@ class AudioPlayer {
   ///
   ///  Results in `Future<Duration>`.
   Future<dynamic> getDevices({bool printDebug = false}) async {
-    devices = await _channel.invokeMethod('getDevices');
+    devices = await _channel.invokeMethod('getDevices', {'id': id});
     deviceIndex = devices['default'];
     if (printDebug) {
       print("Default: " + deviceIndex.toString());
@@ -116,46 +121,6 @@ class AudioPlayer {
       if (this._playerState[0]) {
         this._setPlayerState(true, true, false, false);
         await _channel.invokeMethod('play', {'id': id});
-        success = true;
-      } else {
-        success = false;
-      }
-    }
-    return success;
-  }
-
-  /// ## Load Waveform Synthesizer
-  ///
-  ///  Results in `Future<true>`, if the wave is successfully loaded.
-  ///
-  ///  Returns `Future<false>`, if the wave was not loaded
-  ///
-  /// Types:
-  /// 0 = sine
-  /// 1 = square
-  /// 2 = triangle
-  /// 3 = sawtooth
-  /// Example of valid waves:
-  ///
-  /// 1) `loadWave(0.2, 200, 0)`
-  ///
-  /// 2) `"loadWave(0.4, 400, 3)"`
-  Future<bool> loadWave(
-      double amplitude, double frequency, int waveType) async {
-    this._setPlayerState(true, false, true, true);
-    bool success;
-    if (this._playerState[1]) {
-      success = false;
-    } else {
-      if (this._playerState[0]) {
-        waveAmplitude = amplitude;
-        waveFrequency = frequency;
-        await _channel.invokeMethod('loadWave', {
-          'id': id,
-          'amplitude': amplitude,
-          'frequency': frequency,
-          'wave_type': waveType
-        });
         success = true;
       } else {
         success = false;
@@ -276,6 +241,52 @@ class AudioPlayer {
     this.volume = volume;
   }
 
+  //
+  //
+  //  *** WAVES ***
+  //
+  //
+
+  /// ## Load Waveform Synthesizer
+  ///
+  ///  Results in `Future<true>`, if the wave is successfully loaded.
+  ///
+  ///  Returns `Future<false>`, if the wave was not loaded
+  ///
+  /// Types:
+  /// 0 = sine
+  /// 1 = square
+  /// 2 = triangle
+  /// 3 = sawtooth
+  /// Example of valid waves:
+  ///
+  /// 1) `loadWave(0.2, 200, 0)`
+  ///
+  /// 2) `"loadWave(0.4, 400, 3)"`
+  Future<bool> loadWave(double amplitude, double frequency, int wType) async {
+    this._setPlayerState(true, false, true, true);
+    bool success;
+    if (this._playerState[1]) {
+      success = false;
+    } else {
+      if (this._playerState[0]) {
+        waveAmplitude = amplitude;
+        waveFrequency = frequency;
+        waveType = wType;
+        await _channel.invokeMethod('loadWave', {
+          'id': id,
+          'amplitude': amplitude,
+          'frequency': frequency,
+          'wave_type': wType
+        });
+        success = true;
+      } else {
+        success = false;
+      }
+    }
+    return success;
+  }
+
   /// ## Sets Audio Wave Amplitude
   ///
   ///     audioPlayer.setWaveAmplitude(0.25);
@@ -318,6 +329,89 @@ class AudioPlayer {
   void setWaveType(int waveType) {
     _channel.invokeMethod('setWaveType', {'id': id, 'wave_type': waveType});
     this.waveType = waveType;
+  }
+
+  //
+  //
+  //  *** NOISE ***
+  //
+  //
+
+  /// ## Load Noise Synthesizer
+  ///
+  ///  Results in `Future<true>`, if the wave is successfully loaded.
+  ///
+  ///  Returns `Future<false>`, if the wave was not loaded
+  ///
+  /// Types:
+  /// 0 = white
+  /// 1 = pink
+  /// 2 = brownian
+  ///
+  /// Example of valid waves:
+  ///
+  /// 1) `loadNoise(int seed, double amplitude, int type)`
+  ///
+  /// 2) `"loadNoise(2020, 0.2, 1)"`
+  Future<bool> loadNoise(int seed, double amplitude, int nType) async {
+    this._setPlayerState(true, false, true, true);
+    bool success;
+    if (this._playerState[1]) {
+      success = false;
+    } else {
+      if (this._playerState[0]) {
+        noiseAmplitude = amplitude;
+        noiseSeed = seed;
+        noiseType = nType;
+        await _channel.invokeMethod('loadNoise', {
+          'id': id,
+          'amplitude': amplitude,
+          'seed': seed,
+          'noise_type': nType
+        });
+        success = true;
+      } else {
+        success = false;
+      }
+    }
+    return success;
+  }
+
+  /// ## Sets Audio Noise Seed
+  ///
+  ///     audioPlayer.setNoiseSeed(528);
+  ///
+  /// You can access the seed of the noise anytime later on.
+  ///
+  ///     double currentFrequency = audioPlayer.noiseSeed;
+  void setNoiseSeed(int seed) {
+    _channel.invokeMethod('setNoiseSeed', {'id': id, 'seed': seed});
+    this.noiseSeed = seed;
+  }
+
+  /// ## Sets Audio Noise Amplitude
+  ///
+  ///     audioPlayer.setNoiseAmplitude(0.25);
+  ///
+  /// You can access the amplitude of the noise anytime later on.
+  ///
+  ///     double currentAmplitude = audioPlayer.noiseAmplitude;
+  void setNoiseAmplitude(double amplitude) {
+    _channel
+        .invokeMethod('setNoiseAmplitude', {'id': id, 'amplitude': amplitude});
+    this.noiseAmplitude = amplitude;
+  }
+
+  /// ## Sets Audio Noise Type
+  ///
+  ///     audioPlayer.setNoiseType(1);
+  ///
+  /// You can access the seed of the noise anytime later on.
+  ///
+  ///     double currentFrequency = audioPlayer.noiseType;
+  void setNoiseType(int noiseType) {
+    _channel.invokeMethod('setNoiseType', {'id': id, 'noise_type': noiseType});
+    this.noiseType = noiseType;
   }
 
   void _setPlayerState(
