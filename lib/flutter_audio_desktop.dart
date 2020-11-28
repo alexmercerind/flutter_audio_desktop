@@ -19,6 +19,7 @@ class AudioPlayer {
   double waveAmplitude = 0.1;
   double waveFrequency = 440;
   int waveSampleRate = 44800;
+  int waveType = 0;
   List<bool> _playerState = [false, false, false, true];
   Map<dynamic, dynamic> devices = new Map<dynamic, dynamic>();
 
@@ -312,6 +313,11 @@ class AudioPlayer {
     _channel.invokeMethod(
         'setWaveSampleRate', {'id': id, 'sample_rate': sampleRate});
     this.waveSampleRate = sampleRate;
+  }
+
+  void setWaveType(int waveType) {
+    _channel.invokeMethod('setWaveType', {'id': id, 'wave_type': waveType});
+    this.waveType = waveType;
   }
 
   void _setPlayerState(
