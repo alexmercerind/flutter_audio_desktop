@@ -8,8 +8,9 @@ class Player extends StatefulWidget {
 
 class PlayerState extends State<Player> {
   /// Simple player implementation. Setting debug: true for extra logging.
-  AudioPlayer audioPlayer;
-  AudioPlayer audioPlayer2;
+  AudioPlayer filePlayer;
+  AudioPlayer wavePlayer;
+  AudioPlayer noisePlayer;
 
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   String _textFieldValue = '';
@@ -17,106 +18,185 @@ class PlayerState extends State<Player> {
   @override
   void initState() {
     super.initState();
-    this.audioPlayer = new AudioPlayer(id: 0, debug: true);
-    this.audioPlayer2 = new AudioPlayer(id: 1, debug: true);
+    this.filePlayer = new AudioPlayer(id: 0, debug: true);
+    this.wavePlayer = new AudioPlayer(id: 1, debug: true);
+    this.noisePlayer = new AudioPlayer(id: 2, debug: true);
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        tooltip: 'Play loaded audio',
-        child:
-            audioPlayer.isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
-        onPressed: () {
-          this.setState(() {});
-          if (!audioPlayer.isLoaded) {
-            this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                  content: Text('Load audio first.'),
-                ));
-          } else {
-            if (audioPlayer.isPaused) {
-              /// Playing loaded audio file.
-              this.audioPlayer.play();
-              //this.audioPlayer2.play();
-            } else if (audioPlayer.isPlaying) {
-              /// Pausing playback of loaded audio file.
-              this.audioPlayer.pause();
-              //this.audioPlayer2.pause();
-            }
-          }
-        },
-      ),
-      key: this._scaffoldKey,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('flutter_audio_desktop Demo'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              Text("Load Wave"),
-              IconButton(
-                color: Colors.blue,
-                icon: Icon(
-                  Icons.check,
-                  size: 28,
+        key: this._scaffoldKey,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text('flutter_audio_desktop Demo'),
+        ),
+        body: Center(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Divider(),
+          Padding(
+              padding: EdgeInsets.all(5),
+              child: Text(
+                "File Settings: ",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )),
+          Padding(
+            padding: EdgeInsets.all(5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 150,
                 ),
-                onPressed: () async {
-                  audioPlayer.loadWave(0.2, 400, 0);
-                  audioPlayer2.loadWave(0.2, 700, 0);
-                },
-              ),
-            ]),
-            Padding(
-              padding: EdgeInsets.all(32),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 480,
-                    child: TextField(
-                      onChanged: (String value) {
-                        this._textFieldValue = value;
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Enter path to an audio file...',
-                        labelText: 'Audio Location',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 24,
-                  ),
-                  IconButton(
-                    color: Colors.blue,
-                    icon: Icon(
-                      Icons.check,
-                      size: 28,
-                    ),
-                    tooltip: 'Load Audio',
-                    onPressed: () async {
-                      /// Loading an audio file into the player.
-                      bool result =
-                          await audioPlayer.load(this._textFieldValue);
-                      if (result) {
-                        this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                            content: Text(
-                                'Audio file is loaded. Press FAB to play.')));
-                      } else {
-                        this._scaffoldKey.currentState.showSnackBar(SnackBar(
-                            content:
-                                Text('Audio file is could not be loaded.')));
-                      }
+                SizedBox(
+                  width: 320,
+                  child: TextField(
+                    onChanged: (String value) {
+                      this._textFieldValue = value;
                     },
+                    decoration: InputDecoration(
+                      hintText: 'Enter path to an audio file...',
+                      labelText: 'Audio Location',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ],
+                ),
+                SizedBox(
+                  width: 24,
+                ),
+                RaisedButton(
+                  child: Container(
+                    child: Text(
+                      "Load File",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  color: Colors.blue,
+                  onPressed: () async {
+                    /// Loading an audio file into the player.
+                    bool result = await filePlayer.load(this._textFieldValue);
+                    if (result) {
+                      this._scaffoldKey.currentState.showSnackBar(SnackBar(
+                          content: Text(
+                              'Audio file is loaded. Press FAB to play.')));
+                    } else {
+                      this._scaffoldKey.currentState.showSnackBar(SnackBar(
+                          content: Text('Audio file is could not be loaded.')));
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: filePlayer.isPlaying
+                      ? Icon(Icons.pause)
+                      : Icon(Icons.play_arrow),
+                  iconSize: 36,
+                  color: Colors.blue,
+                  onPressed: () {
+                    this.setState(() {});
+                    if (!filePlayer.isLoaded) {
+                      this._scaffoldKey.currentState.showSnackBar(SnackBar(
+                            content: Text('Load file first.'),
+                          ));
+                    } else {
+                      if (filePlayer.isPaused) {
+                        /// Playing loaded audio file.
+                        this.filePlayer.play();
+                      } else if (filePlayer.isPlaying) {
+                        /// Pausing playback of loaded audio file.
+                        this.filePlayer.pause();
+                      }
+                    }
+                  },
+                ),
+                Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.volume_down,
+                          size: 36,
+                          color: Colors.blue,
+                        ),
+                        Slider(
+                            divisions: 10,
+                            value: filePlayer.volume,
+                            onChanged: (value) {
+                              this.setState(() {
+                                /// Changing player volume.
+                                this.filePlayer.setVolume(value);
+                              });
+                            }),
+                        Icon(
+                          Icons.device_hub,
+                          size: 36,
+                          color: Colors.blue,
+                        ),
+                        Slider(
+                            divisions: filePlayer.devices.length > 0
+                                ? filePlayer.devices.length
+                                : 1,
+                            value: filePlayer.deviceIndex.toDouble(),
+                            min: 0,
+                            max: filePlayer.devices.length.toDouble(),
+                            onChanged: (value) {
+                              this.setState(() {
+                                /// Changing player volume.
+                                this
+                                    .filePlayer
+                                    .setDevice(deviceIndex: value.toInt());
+                              });
+                            }),
+                      ],
+                    )),
+              ],
+            ),
+          ),
+          Divider(),
+          Padding(
+              padding: EdgeInsets.all(5),
+              child: Text(
+                "Wave Settings: ",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            RaisedButton(
+              child: Container(
+                child: Text(
+                  "Load Wave",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
+              color: Colors.blue,
+              onPressed: () async {
+                wavePlayer.loadWave(0.2, 400, 0);
+              },
+            ),
+            IconButton(
+              icon: wavePlayer.isPlaying
+                  ? Icon(Icons.pause)
+                  : Icon(Icons.play_arrow),
+              color: Colors.blue,
+              iconSize: 36,
+              onPressed: () {
+                this.setState(() {});
+                if (!wavePlayer.isLoaded) {
+                  this._scaffoldKey.currentState.showSnackBar(SnackBar(
+                        content: Text('Load wave first.'),
+                      ));
+                } else {
+                  if (wavePlayer.isPaused) {
+                    /// Playing loaded audio file.
+                    this.wavePlayer.play();
+                  } else if (wavePlayer.isPlaying) {
+                    /// Pausing playback of loaded audio file.
+                    this.wavePlayer.pause();
+                  }
+                }
+              },
             ),
             Padding(
-                padding: EdgeInsets.all(24),
+                padding: EdgeInsets.all(5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -127,11 +207,11 @@ class PlayerState extends State<Player> {
                     ),
                     Slider(
                         divisions: 10,
-                        value: audioPlayer.volume,
+                        value: wavePlayer.volume,
                         onChanged: (value) {
                           this.setState(() {
                             /// Changing player volume.
-                            this.audioPlayer.setVolume(value);
+                            this.wavePlayer.setVolume(value);
                           });
                         }),
                     Icon(
@@ -140,94 +220,232 @@ class PlayerState extends State<Player> {
                       color: Colors.blue,
                     ),
                     Slider(
-                        divisions: audioPlayer.devices.length > 0
-                            ? audioPlayer.devices.length
+                        divisions: wavePlayer.devices.length > 0
+                            ? wavePlayer.devices.length
                             : 1,
-                        value: audioPlayer.deviceIndex.toDouble(),
+                        value: wavePlayer.deviceIndex.toDouble(),
                         min: 0,
-                        max: audioPlayer.devices.length.toDouble(),
+                        max: wavePlayer.devices.length.toDouble(),
                         onChanged: (value) {
                           this.setState(() {
                             /// Changing player volume.
                             this
-                                .audioPlayer
+                                .wavePlayer
                                 .setDevice(deviceIndex: value.toInt());
                           });
                         }),
                   ],
                 )),
+          ]),
+          Padding(
+            padding: EdgeInsets.all(5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.multiline_chart,
+                  size: 36,
+                  color: Colors.blue,
+                ),
+                Slider(
+                    divisions: 10,
+                    value: wavePlayer.waveAmplitude,
+                    min: 0.0,
+                    max: 1,
+                    onChanged: (value) {
+                      this.setState(() {
+                        /// Changing player volume.
+                        this.wavePlayer.setWaveAmplitude(value);
+                      });
+                    }),
+                Icon(
+                  Icons.radio,
+                  size: 36,
+                  color: Colors.blue,
+                ),
+                Slider(
+                    divisions: 100,
+                    value: wavePlayer.waveFrequency,
+                    min: 0,
+                    max: 1000,
+                    onChanged: (value) {
+                      this.setState(() {
+                        /// Changing player volume.
+                        this.wavePlayer.setWaveFrequency(value);
+                      });
+                    }),
+                Icon(
+                  Icons.timelapse,
+                  size: 36,
+                  color: Colors.blue,
+                ),
+                Slider(
+                    divisions: 1000,
+                    value: wavePlayer.waveSampleRate.toDouble(),
+                    min: 1000,
+                    max: 100000,
+                    onChanged: (value) {
+                      this.setState(() {
+                        /// Changing player volume.
+                        this.wavePlayer.setWaveSampleRate(value.toInt());
+                      });
+                    }),
+                Slider(
+                    divisions: 4,
+                    value: wavePlayer.waveType.toDouble(),
+                    min: 0,
+                    max: 4,
+                    onChanged: (value) {
+                      this.setState(() {
+                        /// Changing player volume.
+                        this.wavePlayer.setWaveType(value.toInt());
+                      });
+                    }),
+              ],
+            ),
+          ),
+          Divider(),
+          Padding(
+              padding: EdgeInsets.all(5),
+              child: Text(
+                "Noise Settings: ",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            RaisedButton(
+              child: Container(
+                child: Text(
+                  "Load Noise",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              color: Colors.blue,
+              onPressed: () async {
+                noisePlayer.loadNoise(0, 0.2, 0);
+              },
+            ),
+            IconButton(
+              icon: noisePlayer.isPlaying
+                  ? Icon(Icons.pause)
+                  : Icon(Icons.play_arrow),
+              color: Colors.blue,
+              iconSize: 36,
+              onPressed: () {
+                this.setState(() {});
+                if (!noisePlayer.isLoaded) {
+                  this._scaffoldKey.currentState.showSnackBar(SnackBar(
+                        content: Text('Load noise first.'),
+                      ));
+                } else {
+                  if (noisePlayer.isPaused) {
+                    /// Playing loaded audio file.
+                    this.noisePlayer.play();
+                  } else if (noisePlayer.isPlaying) {
+                    /// Pausing playback of loaded audio file.
+                    this.noisePlayer.pause();
+                  }
+                }
+              },
+            ),
             Padding(
-                padding: EdgeInsets.all(24), child: Text("Wave Settings: ")),
-            Padding(
-                padding: EdgeInsets.all(24),
+                padding: EdgeInsets.all(5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.multiline_chart,
+                      Icons.volume_down,
                       size: 36,
                       color: Colors.blue,
                     ),
                     Slider(
                         divisions: 10,
-                        value: audioPlayer.waveAmplitude,
-                        min: 0.0,
-                        max: 1,
+                        value: noisePlayer.volume,
                         onChanged: (value) {
                           this.setState(() {
                             /// Changing player volume.
-                            this.audioPlayer.setWaveAmplitude(value);
+                            this.noisePlayer.setVolume(value);
                           });
                         }),
                     Icon(
-                      Icons.radio,
+                      Icons.device_hub,
                       size: 36,
                       color: Colors.blue,
                     ),
                     Slider(
-                        divisions: 100,
-                        value: audioPlayer.waveFrequency,
+                        divisions: noisePlayer.devices.length > 0
+                            ? noisePlayer.devices.length
+                            : 1,
+                        value: noisePlayer.deviceIndex.toDouble(),
                         min: 0,
-                        max: 1000,
+                        max: noisePlayer.devices.length.toDouble(),
                         onChanged: (value) {
                           this.setState(() {
                             /// Changing player volume.
-                            this.audioPlayer.setWaveFrequency(value);
-                          });
-                        }),
-                    Icon(
-                      Icons.timelapse,
-                      size: 36,
-                      color: Colors.blue,
-                    ),
-                    Slider(
-                        divisions: 1000,
-                        value: audioPlayer.waveSampleRate.toDouble(),
-                        min: 1000,
-                        max: 100000,
-                        onChanged: (value) {
-                          this.setState(() {
-                            /// Changing player volume.
-                            this.audioPlayer.setWaveSampleRate(value.toInt());
-                          });
-                        }),
-                    Slider(
-                        divisions: 4,
-                        value: audioPlayer.waveType.toDouble(),
-                        min: 0,
-                        max: 4,
-                        onChanged: (value) {
-                          this.setState(() {
-                            /// Changing player volume.
-                            this.audioPlayer.setWaveType(value.toInt());
+                            this
+                                .noisePlayer
+                                .setDevice(deviceIndex: value.toInt());
                           });
                         }),
                   ],
                 )),
-          ],
-        ),
-      ),
-    );
+          ]),
+          Padding(
+              padding: EdgeInsets.all(5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.multiline_chart,
+                    size: 36,
+                    color: Colors.blue,
+                  ),
+                  Slider(
+                      divisions: 10,
+                      value: noisePlayer.noiseAmplitude,
+                      min: 0.0,
+                      max: 1,
+                      onChanged: (value) {
+                        this.setState(() {
+                          /// Changing player volume.
+                          this.noisePlayer.setNoiseAmplitude(value);
+                        });
+                      }),
+                  Icon(
+                    Icons.radio,
+                    size: 36,
+                    color: Colors.blue,
+                  ),
+                  Slider(
+                      divisions: 9999,
+                      value: noisePlayer.noiseSeed.toDouble(),
+                      min: 0,
+                      max: 999999999,
+                      onChanged: (value) {
+                        this.setState(() {
+                          /// Changing player volume.
+                          this.noisePlayer.setNoiseSeed(value.toInt());
+                        });
+                      }),
+                  Icon(
+                    Icons.timelapse,
+                    size: 36,
+                    color: Colors.blue,
+                  ),
+                  Slider(
+                      divisions: 3,
+                      value: noisePlayer.noiseType.toDouble(),
+                      min: 0,
+                      max: 2,
+                      onChanged: (value) {
+                        this.setState(() {
+                          /// Changing player volume.
+                          this.noisePlayer.setNoiseType(value.toInt());
+                        });
+                      }),
+                ],
+              )),
+          Divider()
+        ])));
   }
 }
 

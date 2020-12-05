@@ -14,15 +14,15 @@ namespace Audio
         audioPlayerManager->players.insert(audioPlayerManager->players.end(), audioPlayer);
     }
 
-    int getDeviceCount()
+    int getDeviceCount(int id)
     {
-        AudioPlayer *audioPlayer = audioPlayerManager->players.at(0);
+        AudioPlayer *audioPlayer = audioPlayerManager->players.at(id);
         return audioPlayer->playbackDeviceCount;
     }
 
-    void getDevices(AudioDevice devices[])
+    void getDevices(int id, AudioDevice devices[])
     {
-        AudioPlayer *audioPlayer = audioPlayerManager->players.at(0);
+        AudioPlayer *audioPlayer = audioPlayerManager->players.at(id);
         audioPlayer->getDevices(devices);
     }
 
@@ -80,6 +80,24 @@ namespace Audio
         audioPlayer->setVolume(volume);
     }
 
+    float getVolume(int id)
+    {
+        auto audioPlayer = audioPlayerManager->players.at(id);
+        return audioPlayer->getVolume();
+    }
+
+    //
+    //
+    //  *** WAVES ***
+    //
+    //
+
+    void loadWave(int id, double amplitude, double frequency, int waveType)
+    {
+        auto audioPlayer = audioPlayerManager->players.at(id);
+        audioPlayer->loadWave(amplitude, frequency, waveType);
+    }
+
     void setWaveFrequency(int id, double frequency)
     {
         auto audioPlayer = audioPlayerManager->players.at(id);
@@ -104,17 +122,36 @@ namespace Audio
         audioPlayer->setWaveType(waveType);
     }
 
-    void loadWave(int id, double amplitude, double frequency, int waveType)
+    //
+    //
+    //  *** NOISE ***
+    //
+    //
+
+    void loadNoise(int id, int seed, double amplitude, int noiseType)
     {
         auto audioPlayer = audioPlayerManager->players.at(id);
-        audioPlayer->loadWave(amplitude, frequency, waveType);
+        audioPlayer->loadNoise(amplitude, seed, noiseType);
     }
 
-    float getVolume(int id)
+    void setNoiseSeed(int id, int seed)
     {
         auto audioPlayer = audioPlayerManager->players.at(id);
-        return audioPlayer->getVolume();
+        audioPlayer->setNoiseSeed(seed);
     }
+
+    void setNoiseAmplitude(int id, double amplitude)
+    {
+        auto audioPlayer = audioPlayerManager->players.at(id);
+        audioPlayer->setNoiseAmplitude(amplitude);
+    }
+
+    void setNoiseType(int id, int noiseType)
+    {
+        auto audioPlayer = audioPlayerManager->players.at(id);
+        audioPlayer->setNoiseType(noiseType);
+    }
+
 } // namespace Audio
 
 int main(int argc, const char **argv)
