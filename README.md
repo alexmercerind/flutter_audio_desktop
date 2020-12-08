@@ -1,8 +1,8 @@
 # [flutter_audio_desktop](https://github.com/alexmercerind/flutter_audio_desktop)
 
-#### A simple yet functional :notes: audio library for Flutter Desktop.
+#### A simple :musical_note: audio playback library for Flutter Desktop.
 
-Right now, as it is just a start, it supports MP3, FLAC & WAV playback. I'll try to increase the domain of support formats with time & plan is to provide metadata of a track aswell.
+Right now, as it is just a start, it supports MP3, FLAC & WAV playback. We'll try to increase the domain of support formats with time.
 
 Feel free to open issue anytime.
 
@@ -10,27 +10,21 @@ Feel free to open issue anytime.
 ## :arrow_down: Install
 
 Mention in your pubspec.yaml requirements:
-
 ```yaml
 dependencies:
   ...
-  flutter_audio_desktop: ^0.0.7
+  flutter_audio_desktop: ^0.0.8
+```
+Fetch the dependencies by following command:
+```
+flutter pub get
 ```
 
-
 ## :triangular_ruler: Usage
-
+#### Playing an audio file
 ```dart
 // Start AudioPlayer and provide int for id.
-// Note: You must provide new IDs to additional instances.
 var audioPlayer = new AudioPlayer(id: 0);
-
-// See a list of available system audio devices.
-// You can then change the device with setDevice,
-// and the ID included in the returned map.
-Map<String, dynamic> result = await audioPlayer.getDevices();
-// or if you don't need to refresh, access from
-audioPlayer.devices
 
 // Load audio file
 audioPlayer.load('/home/alexmercerind/music.mp3');
@@ -52,63 +46,52 @@ audioPlayer.setPosition(Duration(seconds: 10));
 print('Position of playback after skipping 10 seconds: ${audioPlayer.getPosition()}');
 
 Timer(Duration(seconds: 10), () {
-
     // Pause the playback.
     audioPlayer.pause();
     print('Playback of audio stopped after 10 seconds.');
 }
+```
+#### Playing an audio wave or noise
+```dart
+// New player for wave
+AudioPlayer wavePlayer = new AudioPlayer(id: 1);
 
-// New player for waves
-AudioPlayer wavePlayer = new AudioPlayer(id:1);
-
-// Load Wave
-// type = int
-// 0 = sine
-// 1 = square
-// 2 = triangle
-// 3 = sawtooth
+// Load wave
 wavePlayer.loadWave(amplitude, frequency, type)
 
-// Set Frequency
-wavePlayer.setWaveFrequency(double frequency);
+// Set frequency
+wavePlayer.setWaveFrequency(frequency);
 
-// Set Amplitude
-wavePlayer.setWaveAmplitude(double amplitude);
+// Set amplitude
+wavePlayer.setWaveAmplitude(amplitude);
 
-// Set Sample Rate
-wavePlayer.setWaveSampleRate(int sampleRate)
+// Set sample rate
+wavePlayer.setWaveSampleRate(sampleRate)
 
-// Set Wave Type
-
-wavePlayer.setWaveType(int type)
+// Set wave type
+wavePlayer.setWaveType(type)
 
 // New player for noise
-AudioPlayer noisePlayer = new AudioPlayer(id:2);
+AudioPlayer noisePlayer = new AudioPlayer(id: 2);
 
-// Load Noise
-// type = int
-// 0 = white
-// 1 = pink
-// 2 = brownian
+// Load noise
 noisePlayer.loadNoise(seed, amplitude, type);
 
-// Set Seed
-noisePlayer.setNoiseSeed(int seed);
+// Set seed
+noisePlayer.setNoiseSeed(seed);
 
-// Set Amplitude
-noisePlayer.setNoiseAmplitude(double amplitude);
+// Set amplitude
+noisePlayer.setNoiseAmplitude(amplitude);
 
-// Set Noise Type
-noisePlayer.setNoiseType(int type)
-
+// Set noise type
+noisePlayer.setNoiseType(type)
 ```
 
 You can see [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) simple example app, if you are confused with the usage.
 
+## :ok_hand: Contributions
 
-## :heart: Like the library?
-
-Feel free to use in your Flutter Desktop app. Consider :star: starring the repository if you want to show YOUR SUPPORT to the development & appreciate the effort.
+Thanks a lot to [@MichealReed](https://github.com/MichealReed) for adding multiple player instances, along with wave & noise APIs to the project.
 
 ## :heavy_check_mark: Progress
 
@@ -128,4 +111,4 @@ I wrote [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/maste
 
 There is not any audio playback library for Flutter Desktop at the moment, so I decided to write one myself.
 
-###### :love_letter: Thanks to [David Reid](https://github.com/mackron).
+###### :love_letter: Thanks to [David Reid](https://github.com/mackron)  for [miniaudio](https://github.com/mackron/miniaudio).
