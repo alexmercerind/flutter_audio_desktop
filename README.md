@@ -58,17 +58,48 @@ Timer(Duration(seconds: 10), () {
     print('Playback of audio stopped after 10 seconds.');
 }
 
-// Load wave
-audioPlayer.loadWave(amplitude, frequency, type)
+// New player for waves
+AudioPlayer wavePlayer = new AudioPlayer(id:1);
 
-// Set frequency
-audioPlayer.setWaveFrequency(double frequency);
+// Load Wave
+// type = int
+// 0 = sine
+// 1 = square
+// 2 = triangle
+// 3 = sawtooth
+wavePlayer.loadWave(amplitude, frequency, type)
+
+// Set Frequency
+wavePlayer.setWaveFrequency(double frequency);
 
 // Set Amplitude
-audioPlayer.setWaveAmplitude(double amplitude);
+wavePlayer.setWaveAmplitude(double amplitude);
 
 // Set Sample Rate
-audioPlayer.setWaveSampleRate(int sampleRate)
+wavePlayer.setWaveSampleRate(int sampleRate)
+
+// Set Wave Type
+
+wavePlayer.setWaveType(int type)
+
+// New player for noise
+AudioPlayer noisePlayer = new AudioPlayer(id:2);
+
+// Load Noise
+// type = int
+// 0 = white
+// 1 = pink
+// 2 = brownian
+noisePlayer.loadNoise(seed, amplitude, type);
+
+// Set Seed
+noisePlayer.setNoiseSeed(int seed);
+
+// Set Amplitude
+noisePlayer.setNoiseAmplitude(double amplitude);
+
+// Set Noise Type
+noisePlayer.setNoiseType(int type)
 
 ```
 
