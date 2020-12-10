@@ -1,3 +1,11 @@
+## 0.0.8
+
+**Multiple player instances, wave & noise methods**
+
+- Now multiple AudioPlayer instances can be made, by providing optional id parameter to the constructor.
+- Added methods for playing waves.
+- Added methods for playing noise.
+
 ## 0.0.7
 
 **Initial Playback Device Changing Support**
