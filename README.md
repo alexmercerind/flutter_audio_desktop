@@ -12,7 +12,7 @@ Mention in your pubspec.yaml requirements:
 ```yaml
 dependencies:
   ...
-  flutter_audio_desktop: ^0.0.8
+  flutter_audio_desktop: ^0.0.9
 ```
 Fetch the dependencies by following command:
 ```
@@ -51,8 +51,16 @@ Timer(Duration(seconds: 10), () {
 }
 ```
 
+#### Linux
+
+![](https://github.com/alexmercerind/flutter_audio_desktop/blob/assets/linux.png?raw=true)
+
 You can see [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) simple example app, if you are confused with the usage.
 
+
+## :page_facing_up: License
+
+MIT
 
 ## :heavy_check_mark: Progress
 
@@ -66,7 +74,7 @@ The library is supported on Microsoft Windows & Linux.
 
 ## :wrench: Workings
 
-One word, C++. It calls native methods using Dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) && [miniaudio_engine](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
+One word, C++. It calls native methods using Dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) & [miniaudio_engine](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
 
 I made [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/audioplayer) simple implementation in C++ around his library to get this working.
 
