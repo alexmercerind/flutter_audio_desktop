@@ -7,11 +7,12 @@ final MethodChannel _channel = MethodChannel('flutter_audio_desktop');
 class Audio {
   File file;
   bool isPlaying;
+  bool isStopped;
   bool isCompleted;
   Duration position;
   Duration duration;
 
-  Audio({this.file, this.isPlaying, this.isCompleted, this.position, this.duration});
+  Audio({this.file, this.isPlaying, this.isStopped, this.isCompleted, this.position, this.duration});
 }
 
 
@@ -20,16 +21,13 @@ class AudioPlayer {
   File file;
   Audio audio;
   Stream<Audio> stream;
-
+  
   AudioPlayer({this.id: 0}) {
-    _channel.invokeMethod(
-      'add',
-      {'id': this.id},
-    );
     this.audio = this.audio = Audio(
       file: this.file,
       isPlaying: false,
-      isCompleted: position == duration,
+      isStopped: true,
+      isCompleted: false,
       position: Duration.zero,
       duration: Duration.zero,
     );
@@ -37,24 +35,45 @@ class AudioPlayer {
   }
 
   Stream<Audio> _startStream() async* {
+    bool wasAudioPaused = false;
     Stream<Future<Audio>> stream = Stream.periodic(
-      Duration(milliseconds: 500),
-      (int _) async {
-        this.audio.position = await this.position;
-        this.audio.duration = await this.duration;
-        this.audio.isCompleted = this.audio.position.inSeconds == this.audio.duration.inSeconds;
+      Duration(milliseconds: 100),
+      (_) async {
+        if (!this.audio.isStopped) {
+          this.audio.position = await this.position;
+          this.audio.duration = await this.duration;
+          this.audio.isCompleted = this.audio.duration.inSeconds == 0 ? false: this.audio.position.inSeconds == this.audio.duration.inSeconds;
+        }
+        else {
+          this.audio.file = null;
+          this.audio.isPlaying = false;
+          this.audio.isCompleted = false;
+          this.audio.position = Duration.zero;
+          this.audio.duration = Duration.zero;
+        }
         return this.audio;
       },
     );
     await for(Future<Audio> audioFuture in stream) {
       Audio audio = await audioFuture;
-      if (!audio.isCompleted && audio.isPlaying) {
+      if (audio.isCompleted) {
         yield audio;
+        this.stop();
+        this.audio.isStopped = true;
+      }
+      else if (audio.isPlaying) {
+        yield audio;
+        wasAudioPaused = false;
+      }
+      else if (!wasAudioPaused) {
+        yield audio;
+        wasAudioPaused = true;
       }
     }
   }
 
   Future<void> load(File file) async {
+    this.audio.isStopped = false;
     this.audio.isPlaying = false;
     this.audio.isCompleted = false;
     this.audio.position = Duration.zero;
@@ -91,6 +110,7 @@ class AudioPlayer {
   }
 
   Future<void> stop() async {
+    this.audio.isStopped = true;
     await _channel.invokeMethod(
       'stop',
       {'id': this.id},

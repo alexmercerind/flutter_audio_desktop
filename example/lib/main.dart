@@ -9,6 +9,10 @@ class Player extends StatefulWidget {
 
 class PlayerState extends State<Player> {
   AudioPlayer audioPlayer;
+  File file;
+  bool isPlaying;
+  bool isStopped;
+  bool isCompleted;
   Duration position = Duration.zero;
   Duration duration = Duration.zero;
   double volume = 1.0;
@@ -20,11 +24,27 @@ class PlayerState extends State<Player> {
     this.audioPlayer = new AudioPlayer(id: 0)..stream.listen(
       (Audio audio) {
         this.setState(() {
+          this.file = audio.file;
+          this.isPlaying = audio.isPlaying;
+          this.isStopped = audio.isStopped;
+          this.isCompleted = audio.isCompleted;
           this.position = audio.position;
           this.duration = audio.duration;
         });
       },
     );
+    this.updatePlaybackState();
+  }
+
+  void updatePlaybackState() {
+    this.setState(() {
+      this.file = this.audioPlayer.audio.file;
+      this.isPlaying = this.audioPlayer.audio.isPlaying;
+      this.isStopped = this.audioPlayer.audio.isStopped;
+      this.isCompleted = this.audioPlayer.audio.isCompleted;
+      this.position = this.audioPlayer.audio.position;
+      this.duration = this.audioPlayer.audio.duration;
+    });
   }
 
   String getDurationString(Duration duration) {
@@ -65,6 +85,7 @@ class PlayerState extends State<Player> {
                     this.audioPlayer.load(
                       new File(this.textController.text),
                     );
+                    this.updatePlaybackState();
                   },
                 ),
               ),
@@ -80,7 +101,10 @@ class PlayerState extends State<Player> {
                   icon: Icon(Icons.play_arrow),
                   iconSize: 32.0,
                   color: Colors.blue,
-                  onPressed: () => this.audioPlayer.play(),
+                  onPressed: () {
+                    this.audioPlayer.play();
+                    this.updatePlaybackState();
+                  },
                 ),
               ),
               Padding(
@@ -89,7 +113,22 @@ class PlayerState extends State<Player> {
                   icon: Icon(Icons.pause),
                   iconSize: 32.0,
                   color: Colors.blue,
-                  onPressed: () => this.audioPlayer.pause(),
+                  onPressed: () {
+                    this.audioPlayer.pause();
+                    this.updatePlaybackState();
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(18.0),
+                child: IconButton(
+                  icon: Icon(Icons.stop),
+                  iconSize: 32.0,
+                  color: Colors.blue,
+                  onPressed: () {
+                    this.audioPlayer.stop();
+                    this.updatePlaybackState();
+                  },
                 ),
               ),
               Slider(
@@ -97,15 +136,13 @@ class PlayerState extends State<Player> {
                 min: 0.0,
                 max: 1.0,
                 onChanged: (double volume) {
-                  this.setState(() {
-                    this.volume = volume;
-                  });
+                  this.updatePlaybackState();
                   this.audioPlayer.setVolume(this.volume);
                 },
               ),
             ],
           ),
-          SubHeader('Postion & Duration Setters/Getters'), 
+          SubHeader('Position & Duration Setters/Getters'), 
           Row(
             children: [
               Text(this.getDurationString(this.position)),
@@ -127,6 +164,47 @@ class PlayerState extends State<Player> {
               Text(this.getDurationString(this.duration)),
             ],
           ),  
+          SubHeader('Playback State'),
+          Table(
+            children: [
+              TableRow(
+                children: [
+                  Text('audio.file'),
+                  Text('${this.file}'),
+                ]
+              ),
+              TableRow(
+                children: [
+                  Text('audio.isPlaying'),
+                  Text('${this.isPlaying}'),
+                ]
+              ),
+              TableRow(
+                children: [
+                  Text('audio.isStopped'),
+                  Text('${this.isStopped}'),
+                ]
+              ),
+              TableRow(
+                children: [
+                  Text('audio.isCompleted'),
+                  Text('${this.isCompleted}'),
+                ]
+              ),
+              TableRow(
+                children: [
+                  Text('audio.position'),
+                  Text('${this.position}'),
+                ]
+              ),
+              TableRow(
+                children: [
+                  Text('audio.position'),
+                  Text('${this.duration}'),
+                ]
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -154,9 +232,13 @@ class SubHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.centerLeft,
-      height: 48,
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Text(text),
+      height: 56.0,
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 16,
+        ),
+      ),
     );
   }
 }
