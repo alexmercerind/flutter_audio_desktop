@@ -11,19 +11,28 @@
 #include "internal/callbacks.hpp"
 
 
+const std::string __title__   = "flutter_audio_desktop";
+const std::string __author__  = "alexmercerind";
+const std::string __license__ = "MIT";
+const std::string __version__ = "0.0.9";
+
+
 class AudioPlayerInternal {
     protected:
     std::vector<AudioDevice*> audioDevices;
+    AudioDevice* preferredAudioDevice;
     AudioDevice* defaultAudioDevice;
     ma_device device;
     ma_resource_manager resourceManager;
     ma_resource_manager_data_source dataSource;
     bool isLoaded = false;
     
-    void initialize(AudioDevice* device) {
+    void initialize() {
         this->audioDevices = AudioDevices::getAll();
         this->defaultAudioDevice = AudioDevices::getDefault();
-        this->initDevice(device == nullptr ? this->defaultAudioDevice: device);
+        this->initDevice(
+            this->preferredAudioDevice == nullptr ? this->defaultAudioDevice: this->preferredAudioDevice
+        );
         this->initResourceManager();
     }
 
@@ -59,7 +68,7 @@ class AudioPlayerInternal {
 class AudioPlayer: protected AudioPlayerInternal {
     public:
     AudioPlayer(AudioDevice* audioDevice = nullptr) {
-        this->initialize(audioDevice);
+        this->preferredAudioDevice = audioDevice;
     };
 
     void play(bool isLooping = false) {
@@ -75,6 +84,7 @@ class AudioPlayer: protected AudioPlayerInternal {
 
     void load(std::string filePath) {
         this->isLoaded = true;
+        this->initialize();
         ma_resource_manager_data_source_init(
             &this->resourceManager,
             filePath.c_str(),
@@ -85,7 +95,10 @@ class AudioPlayer: protected AudioPlayerInternal {
     }
 
     void stop() {
-        this->uninitialize();
+        if (this->isLoaded) {
+            this->uninitialize();
+        }
+        this->isLoaded = false;
     }
 
     void setVolume(float volume) {
