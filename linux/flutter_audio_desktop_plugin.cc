@@ -19,13 +19,7 @@ G_DEFINE_TYPE(FlutterAudioDesktopPlugin, flutter_audio_desktop_plugin, g_object_
 
 static void flutter_audio_desktop_plugin_handle_method_call(FlutterAudioDesktopPlugin *self, FlMethodCall *method_call) {
     Method method(method_call);
-    if (method.name == "add") {
-        AudioDevices::getAll();
-        int id = method.getArgument<int>("id");
-        audioPlayers->get(id);
-        method.returnNull();
-    }
-    else if (method.name == "load") {
+    if (method.name == "load") {
         int id = method.getArgument<int>("id");
         std::string filePath = method.getArgument<std::string>("filePath");
         AudioPlayer* audioPlayer = audioPlayers->get(id);
@@ -86,38 +80,37 @@ static void flutter_audio_desktop_plugin_handle_method_call(FlutterAudioDesktopP
     method.returnResult();  
 }
 
-static void flutter_audio_desktop_plugin_dispose(GObject *object)
-{
-  G_OBJECT_CLASS(flutter_audio_desktop_plugin_parent_class)->dispose(object);
+static void flutter_audio_desktop_plugin_dispose(GObject *object) {
+    G_OBJECT_CLASS(flutter_audio_desktop_plugin_parent_class)->dispose(object);
 }
 
-static void flutter_audio_desktop_plugin_class_init(FlutterAudioDesktopPluginClass *klass)
-{
-  G_OBJECT_CLASS(klass)->dispose = flutter_audio_desktop_plugin_dispose;
+static void flutter_audio_desktop_plugin_class_init(FlutterAudioDesktopPluginClass *klass) {
+    G_OBJECT_CLASS(klass)->dispose = flutter_audio_desktop_plugin_dispose;
 }
 
-static void flutter_audio_desktop_plugin_init(FlutterAudioDesktopPlugin *self) {}
-
-static void method_call_cb(FlMethodChannel *channel, FlMethodCall *method_call,
-                           gpointer user_data)
-{
-  FlutterAudioDesktopPlugin *plugin = FLUTTER_AUDIO_DESKTOP_PLUGIN(user_data);
-  flutter_audio_desktop_plugin_handle_method_call(plugin, method_call);
+static void flutter_audio_desktop_plugin_init(FlutterAudioDesktopPlugin *self) {
+    AudioDevices::getAll();
+    std::cout << __title__ << std::endl << 'v' << __version__ << std::endl;
 }
 
-void flutter_audio_desktop_plugin_register_with_registrar(FlPluginRegistrar *registrar)
-{
-  FlutterAudioDesktopPlugin *plugin = FLUTTER_AUDIO_DESKTOP_PLUGIN(
-      g_object_new(flutter_audio_desktop_plugin_get_type(), nullptr));
+static void method_call_cb(FlMethodChannel *channel, FlMethodCall *method_call, gpointer user_data) {
+    FlutterAudioDesktopPlugin *plugin = FLUTTER_AUDIO_DESKTOP_PLUGIN(user_data);
+    flutter_audio_desktop_plugin_handle_method_call(plugin, method_call);
+}
 
-  g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
-  g_autoptr(FlMethodChannel) channel =
-      fl_method_channel_new(fl_plugin_registrar_get_messenger(registrar),
-                            "flutter_audio_desktop",
-                            FL_METHOD_CODEC(codec));
-  fl_method_channel_set_method_call_handler(channel, method_call_cb,
-                                            g_object_ref(plugin),
-                                            g_object_unref);
-
-  g_object_unref(plugin);
+void flutter_audio_desktop_plugin_register_with_registrar(FlPluginRegistrar *registrar) {
+    FlutterAudioDesktopPlugin *plugin = FLUTTER_AUDIO_DESKTOP_PLUGIN(g_object_new(flutter_audio_desktop_plugin_get_type(), nullptr));
+    g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
+    g_autoptr(FlMethodChannel) channel = fl_method_channel_new(
+        fl_plugin_registrar_get_messenger(registrar),
+        "flutter_audio_desktop",
+        FL_METHOD_CODEC(codec)
+    );
+    fl_method_channel_set_method_call_handler(
+        channel,
+        method_call_cb,
+        g_object_ref(plugin),
+        g_object_unref
+    );
+    g_object_unref(plugin);
 }
