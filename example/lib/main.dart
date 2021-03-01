@@ -10,9 +10,9 @@ class Player extends StatefulWidget {
 class PlayerState extends State<Player> {
   AudioPlayer audioPlayer;
   File file;
-  bool isPlaying;
-  bool isStopped;
-  bool isCompleted;
+  bool isPlaying = false;
+  bool isStopped = true;
+  bool isCompleted = false;
   Duration position = Duration.zero;
   Duration duration = Duration.zero;
   double volume = 1.0;
@@ -21,7 +21,10 @@ class PlayerState extends State<Player> {
   @override
   void initState() {
     super.initState();
-    this.audioPlayer = new AudioPlayer(id: 0)..stream.listen(
+    // Create AudioPlayer object by providing any ID.
+    this.audioPlayer = new AudioPlayer(id: 0)
+    // Listen to AudioPlayer events.
+    ..stream.listen(
       (Audio audio) {
         this.setState(() {
           this.file = audio.file;
@@ -33,9 +36,9 @@ class PlayerState extends State<Player> {
         });
       },
     );
-    this.updatePlaybackState();
   }
 
+  // Get AudioPlayer events without stream.
   void updatePlaybackState() {
     this.setState(() {
       this.file = this.audioPlayer.audio.file;
@@ -57,154 +60,236 @@ class PlayerState extends State<Player> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         centerTitle: true,
         title: Text('flutter_audio_desktop'),
       ),
       body: ListView(
-        padding: EdgeInsets.all(32.0),
+        padding: EdgeInsets.only(
+          top: 8.0,
+          bottom: 8.0,
+          left: 8.0,
+          right: 8.0,
+        ),
         children: [
-          SubHeader('File Loading'),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: this.textController,
-                  decoration: InputDecoration(
-                    labelText: 'File Location',
+          Card(
+            elevation: 2.0,
+            color: Colors.white,
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  SubHeader('File Loading'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: this.textController,
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            labelText: 'File Location',
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: IconButton(
+                          icon: Icon(Icons.check),
+                          iconSize: 32.0,
+                          color: Colors.blue,
+                          onPressed: () async {
+                            // Load AudioSource.
+                            await this.audioPlayer.load(
+                              AudioSource.fromFile(
+                                new File(this.textController.text),
+                              ),
+                            );
+                            this.updatePlaybackState();
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                  SubHeader('Playback Setters/Getters'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(18.0),
+                        child: IconButton(
+                          icon: Icon(Icons.play_arrow),
+                          iconSize: 32.0,
+                          color: Colors.blue,
+                          onPressed: this.isStopped ? null: () async {
+                            await this.audioPlayer.play();
+                            this.updatePlaybackState();
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(18.0),
+                        child: IconButton(
+                          icon: Icon(Icons.pause),
+                          iconSize: 32.0,
+                          color: Colors.blue,
+                          onPressed: this.isStopped ? null: () async {
+                            await this.audioPlayer.pause();
+                            this.updatePlaybackState();
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(18.0),
+                        child: IconButton(
+                          icon: Icon(Icons.stop),
+                          iconSize: 32.0,
+                          color: Colors.blue,
+                          onPressed: this.isStopped ? null: () async {
+                            await this.audioPlayer.stop();
+                            this.updatePlaybackState();
+                          },
+                        ),
+                      ),
+                      Slider(
+                        value: this.volume,
+                        min: 0.0,
+                        max: 1.0,
+                        onChanged: this.isStopped ? null: (double volume) async {
+                          this.volume = volume;
+                          // Change Volume.
+                          await this.audioPlayer.setVolume(this.volume);
+                          this.updatePlaybackState();
+                        },
+                      ),
+                    ],
+                  ),
+                  SubHeader('Position & Duration Setters/Getters'), 
+                  Row(
+                    children: [
+                      Text(this.getDurationString(this.position)),
+                      Expanded(
+                        child: Slider(
+                          value: this.position.inMilliseconds.toDouble(),
+                          min: 0.0,
+                          max: this.duration.inMilliseconds.toDouble(),
+                          onChanged: this.isStopped ? null: (double position) async {
+                            // Get or set playback position.
+                            await this.audioPlayer.setPosition(
+                              Duration(milliseconds: position.toInt()),
+                            );
+                          },
+                        ),
+                      ),
+                      Text(this.getDurationString(this.duration)),
+                    ],
+                  ),
+                ],
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: IconButton(
-                  icon: Icon(Icons.check),
-                  iconSize: 32.0,
-                  color: Colors.blue,
-                  onPressed: () {
-                    this.audioPlayer.load(
-                      new File(this.textController.text),
-                    );
-                    this.updatePlaybackState();
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
-          SubHeader('Playback Setters/Getters'),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(18.0),
-                child: IconButton(
-                  icon: Icon(Icons.play_arrow),
-                  iconSize: 32.0,
-                  color: Colors.blue,
-                  onPressed: () {
-                    this.audioPlayer.play();
-                    this.updatePlaybackState();
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(18.0),
-                child: IconButton(
-                  icon: Icon(Icons.pause),
-                  iconSize: 32.0,
-                  color: Colors.blue,
-                  onPressed: () {
-                    this.audioPlayer.pause();
-                    this.updatePlaybackState();
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(18.0),
-                child: IconButton(
-                  icon: Icon(Icons.stop),
-                  iconSize: 32.0,
-                  color: Colors.blue,
-                  onPressed: () {
-                    this.audioPlayer.stop();
-                    this.updatePlaybackState();
-                  },
-                ),
-              ),
-              Slider(
-                value: this.volume,
-                min: 0.0,
-                max: 1.0,
-                onChanged: (double volume) {
-                  this.updatePlaybackState();
-                  this.audioPlayer.setVolume(this.volume);
-                },
-              ),
-            ],
-          ),
-          SubHeader('Position & Duration Setters/Getters'), 
-          Row(
-            children: [
-              Text(this.getDurationString(this.position)),
-              Expanded(
-                child: Slider(
-                  value: this.position.inMilliseconds.toDouble(),
-                  min: 0.0,
-                  max: this.duration.inMilliseconds.toDouble(),
-                  onChanged: (double position) {
-                    this.setState(() {
-                      this.position = Duration(milliseconds: position.toInt());
-                      this.audioPlayer.setPosition(
-                        Duration(milliseconds: position.toInt()),
-                      );
-                    });
-                  },
-                ),
-              ),
-              Text(this.getDurationString(this.duration)),
-            ],
-          ),  
-          SubHeader('Playback State'),
-          Table(
-            children: [
-              TableRow(
+          Card(
+            elevation: 2.0,
+            color: Colors.white,
+            margin: EdgeInsets.all(8.0),
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
                 children: [
-                  Text('audio.file'),
-                  Text('${this.file}'),
-                ]
+                  SubHeader('Playback State'),
+                  Table(
+                    children: [
+                      TableRow(
+                        children: [
+                          Text('audio.file',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text('${this.file}',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ]
+                      ),
+                      TableRow(
+                        children: [
+                          Text('audio.isPlaying',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text('${this.isPlaying}',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ]
+                      ),
+                      TableRow(
+                        children: [
+                          Text('audio.isStopped',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text('${this.isStopped}',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ]
+                      ),
+                      TableRow(
+                        children: [
+                          Text('audio.isCompleted',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text('${this.isCompleted}',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ]
+                      ),
+                      TableRow(
+                        children: [
+                          Text('audio.position',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text('${this.position}',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ]
+                      ),
+                      TableRow(
+                        children: [
+                          Text('audio.position',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text('${this.duration}',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ]
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              TableRow(
-                children: [
-                  Text('audio.isPlaying'),
-                  Text('${this.isPlaying}'),
-                ]
-              ),
-              TableRow(
-                children: [
-                  Text('audio.isStopped'),
-                  Text('${this.isStopped}'),
-                ]
-              ),
-              TableRow(
-                children: [
-                  Text('audio.isCompleted'),
-                  Text('${this.isCompleted}'),
-                ]
-              ),
-              TableRow(
-                children: [
-                  Text('audio.position'),
-                  Text('${this.position}'),
-                ]
-              ),
-              TableRow(
-                children: [
-                  Text('audio.position'),
-                  Text('${this.duration}'),
-                ]
-              ),
-            ],
-          ),
+            ),
+          )
         ],
       ),
     );
@@ -236,7 +321,8 @@ class SubHeader extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 14,
+          color: Colors.black.withOpacity(0.67),
         ),
       ),
     );
