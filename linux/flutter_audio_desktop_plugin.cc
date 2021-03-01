@@ -6,13 +6,10 @@
 #include "include/flutter_audio_desktop/flutter_types.hpp"
 #include "../audioplayer/main.cpp"
 
-#define FLUTTER_AUDIO_DESKTOP_PLUGIN(obj)                                     \
-  (G_TYPE_CHECK_INSTANCE_CAST((obj), flutter_audio_desktop_plugin_get_type(), \
-                              FlutterAudioDesktopPlugin))
+#define FLUTTER_AUDIO_DESKTOP_PLUGIN(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), flutter_audio_desktop_plugin_get_type(), FlutterAudioDesktopPlugin))
 
-struct _FlutterAudioDesktopPlugin
-{
-  GObject parent_instance;
+struct _FlutterAudioDesktopPlugin {
+    GObject parent_instance;
 };
 
 G_DEFINE_TYPE(FlutterAudioDesktopPlugin, flutter_audio_desktop_plugin, g_object_get_type())
@@ -77,7 +74,7 @@ static void flutter_audio_desktop_plugin_handle_method_call(FlutterAudioDesktopP
     else {
         method.returnNotImplemented();
     }
-    method.returnResult();  
+    method.returnResult();
 }
 
 static void flutter_audio_desktop_plugin_dispose(GObject *object) {
