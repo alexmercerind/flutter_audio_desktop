@@ -118,7 +118,8 @@ class AudioPlayer: protected AudioPlayerInternal {
         if (this->isLoaded) {
             unsigned long long durationPCMFrame;
             ma_resource_manager_data_source_get_length_in_pcm_frames(&this->dataSource, &durationPCMFrame);
-            return ma_calculate_buffer_size_in_milliseconds_from_frames(durationPCMFrame, this->device.sampleRate);
+            uint32_t duration = ma_calculate_buffer_size_in_milliseconds_from_frames(durationPCMFrame, this->device.sampleRate);
+            return static_cast<int>(duration);
         }
         else return 0;
     }
@@ -127,7 +128,8 @@ class AudioPlayer: protected AudioPlayerInternal {
         if (this->isLoaded) {
             unsigned long long durationPCMFrame;
             ma_resource_manager_data_source_get_cursor_in_pcm_frames(&this->dataSource, &durationPCMFrame);
-            return ma_calculate_buffer_size_in_milliseconds_from_frames(durationPCMFrame, this->device.sampleRate);
+            uint32_t position = ma_calculate_buffer_size_in_milliseconds_from_frames(durationPCMFrame, this->device.sampleRate);
+            return static_cast<int>(position);
         }
         else return 0;
     }

@@ -33,7 +33,7 @@ class AudioDevices {
         if (ma_context_get_devices(&deviceContext, &playbackDeviceInfos, &playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount) != 0) {
             success = false;
         }
-        for (int index = 0; index < playbackDeviceCount; index++) {
+        for (uint index = 0; index < playbackDeviceCount; index++) {
             AudioDevice device(
                 index,
                 playbackDeviceInfos[index]
