@@ -26,8 +26,6 @@ int main(int argc, const char **argv) {
         AudioPlayer* audioPlayer = audioPlayers->get(0);
         audioPlayer->load(argv[1]);
         audioPlayer->play();
-        audioPlayer->setPosition(10000);
-        std::cout << audioPlayer->getPosition() << std::endl;
         std::cin.get();
     }
     catch (std::string exception) {

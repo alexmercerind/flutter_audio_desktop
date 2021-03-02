@@ -109,16 +109,22 @@ class AudioPlayer: protected AudioPlayerInternal {
 
     void setPosition(int durationMilliseconds) {
         if (this->isLoaded) {
-            unsigned long long durationPCMFrame = ma_calculate_buffer_size_in_frames_from_milliseconds(durationMilliseconds, this->device.sampleRate);
+            uint32_t durationPCMFrame = ma_calculate_buffer_size_in_frames_from_milliseconds(durationMilliseconds, this->device.sampleRate);
             ma_resource_manager_data_source_seek_to_pcm_frame(&this->dataSource, durationPCMFrame);
         }
     }
 
     int getDuration() {
         if (this->isLoaded) {
-            unsigned long long durationPCMFrame;
-            ma_resource_manager_data_source_get_length_in_pcm_frames(&this->dataSource, &durationPCMFrame);
-            uint32_t duration = ma_calculate_buffer_size_in_milliseconds_from_frames(durationPCMFrame, this->device.sampleRate);
+            unsigned __int64 durationPCMFrame;
+            ma_resource_manager_data_source_get_length_in_pcm_frames(
+                &this->dataSource,
+                &durationPCMFrame
+            );
+            uint32_t duration = ma_calculate_buffer_size_in_milliseconds_from_frames(
+                static_cast<uint32_t>(durationPCMFrame),
+                this->device.sampleRate
+            );
             return static_cast<int>(duration);
         }
         else return 0;
@@ -126,9 +132,15 @@ class AudioPlayer: protected AudioPlayerInternal {
 
     int getPosition() {
         if (this->isLoaded) {
-            unsigned long long durationPCMFrame;
-            ma_resource_manager_data_source_get_cursor_in_pcm_frames(&this->dataSource, &durationPCMFrame);
-            uint32_t position = ma_calculate_buffer_size_in_milliseconds_from_frames(durationPCMFrame, this->device.sampleRate);
+            unsigned __int64 positionPCMFrame;
+            ma_resource_manager_data_source_get_cursor_in_pcm_frames(
+                &this->dataSource,
+                &positionPCMFrame
+            );
+            uint32_t position = ma_calculate_buffer_size_in_milliseconds_from_frames(
+                static_cast<uint32_t>(positionPCMFrame),
+                this->device.sampleRate
+            );
             return static_cast<int>(position);
         }
         else return 0;
