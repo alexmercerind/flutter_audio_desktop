@@ -2,6 +2,8 @@
 //  Generated file. Do not edit.
 //
 
+// clang-format off
+
 #include "generated_plugin_registrant.h"
 
 #include <flutter_audio_desktop/flutter_audio_desktop_plugin.h>
