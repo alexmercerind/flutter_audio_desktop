@@ -36,7 +36,7 @@ namespace {
     FlutterAudioDesktopPlugin::~FlutterAudioDesktopPlugin() {}
 
     void FlutterAudioDesktopPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-        Method method(&methodCall, result.release());
+        Method method(&methodCall, std::move(result));
         if (method.name == "load") {
             int id = method.getArgument<int>("id");
             std::string filePath = method.getArgument<std::string>("filePath");

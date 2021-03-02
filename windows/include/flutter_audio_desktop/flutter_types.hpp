@@ -12,13 +12,13 @@ class Method {
     const flutter::MethodCall<flutter::EncodableValue>* methodCall;
     std::string name;
     std::map<flutter::EncodableValue, flutter::EncodableValue> arguments;
-    flutter::MethodResult<flutter::EncodableValue>* result;
+    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result;
 
-    Method(const flutter::MethodCall<flutter::EncodableValue>* methodCall, flutter::MethodResult<flutter::EncodableValue>* result) {
+    Method(const flutter::MethodCall<flutter::EncodableValue>* methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
         this->methodCall = methodCall;
         this->name = std::string(this->methodCall->method_name());
         this->arguments = std::get<flutter::EncodableMap>(*methodCall->arguments());
-        this->result = result;
+        this->result = std::move(result);
     }
 
     template<class T>
