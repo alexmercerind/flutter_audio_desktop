@@ -53,7 +53,7 @@ audioPlayer.audio.isStopped;
 
 ```
 
-See more features in [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/vnext/example/lib/main.dart) example.
+See more features in [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) example.
 
 #### Windows
 
@@ -77,11 +77,15 @@ Thankyou!
 |Platform            |Status                                                    |
 |--------------------|----------------------------------------------------------|
 |Linux               |Working                                                   |
-|Microsoft Windows   |Coming Soon                                               |
+|Microsoft Windows   |Working                                                   |
 |MacOS               |[Learn More](https://www.youtube.com/watch?v=dQw4w9WgXcQ) |
 
 ## Workings
 
 One word, C++. It calls native methods using Dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) & [miniaudio_engine](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
 
-I made [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/vnext/audioplayer) simple implementation in C++ around his library to get this working.
+I made [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/audioplayer) simple implementation in C++ around his library to get this working.
+
+## Acknowledgments
+
+- Thanks to [MichealReed](https://github.com/MichealReed) for his support to the project.
