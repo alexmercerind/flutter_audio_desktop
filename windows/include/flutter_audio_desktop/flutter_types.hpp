@@ -45,9 +45,7 @@ class Method {
         for (const auto& pair : value) {
             map[flutter::EncodableValue(pair.first)] = flutter::EncodableValue(pair.second);
         }
-        this->result->Success(
-            flutter::EncodableValue(map)
-        );
+        this->result->Success(map);
     }
 
     void returnNull() {
