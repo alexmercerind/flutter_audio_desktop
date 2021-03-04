@@ -55,9 +55,13 @@ audioPlayer.audio.isStopped;
 
 See more features in [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/vnext/example/lib/main.dart) example.
 
+#### Windows
+
+<img src="https://github.com/alexmercerind/flutter_audio_desktop/blob/assets/windows.png?raw=true" height="600"></img>
+
 #### Linux
 
-![](https://github.com/alexmercerind/flutter_audio_desktop/blob/assets/linux.png?raw=true)
+<img src="https://github.com/alexmercerind/flutter_audio_desktop/blob/assets/linux.png?raw=true" height="600"></img>
 
 ## Support
 
