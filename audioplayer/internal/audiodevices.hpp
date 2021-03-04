@@ -28,17 +28,15 @@ class AudioDevices {
         }
         ma_device_info *playbackDeviceInfos;
         unsigned int playbackDeviceCount;
-        ma_device_info *pCaptureDeviceInfos;
-        unsigned int captureDeviceCount;
-        if (ma_context_get_devices(&deviceContext, &playbackDeviceInfos, &playbackDeviceCount, &pCaptureDeviceInfos, &captureDeviceCount) != 0) {
+        if (ma_context_get_devices(&deviceContext, &playbackDeviceInfos, &playbackDeviceCount, NULL, NULL) != 0) {
             success = false;
         }
         for (uint32_t index = 0; index < playbackDeviceCount; index++) {
-            AudioDevice device(
+            AudioDevice* device = new AudioDevice(
                 index,
                 playbackDeviceInfos[index]
             );
-            audioDevices.push_back(&device);
+            audioDevices.push_back(device);
         }
         if (!success) {
             throw std::string("EXCEPTION: Audio devices could not be found.");
