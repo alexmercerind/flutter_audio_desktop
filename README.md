@@ -1,114 +1,83 @@
 # [flutter_audio_desktop](https://github.com/alexmercerind/flutter_audio_desktop)
 
-#### A simple :musical_note: audio playback library for Flutter Desktop.
-
-Right now, as it is just a start, it supports MP3, FLAC & WAV playback. We'll try to increase the domain of support formats with time.
+#### An audio playback library for Flutter Desktop.
 
 Feel free to open issue anytime.
 
 
-## :arrow_down: Install
+## Installing
 
-Mention in your pubspec.yaml requirements:
+Mention in your pubspec.yaml:
+
 ```yaml
 dependencies:
   ...
-  flutter_audio_desktop: ^0.0.8
-```
-Fetch the dependencies by following command:
-```
-flutter pub get
+  flutter_audio_desktop: ^0.0.9
 ```
 
-## :triangular_ruler: Usage
-#### Playing an audio file
+## Using
+
 ```dart
-// Start AudioPlayer and provide int for id.
-var audioPlayer = new AudioPlayer(id: 0);
-
-// Load audio file
-audioPlayer.load('/home/alexmercerind/music.mp3');
-
-// Start playing loaded audio file.
+// Create new instance.
+var audioPlayer = new AudioPlayer(id: 0)
+..stream.listen(
+  (Audio audio) {
+    // Listen to playback events.
+  },
+);
+// Load audio source
+audioPlayer.load(
+  new AudioSource.fromFile(
+    new File('/home/alexmercerind/music.mp3'),
+  ),
+);
+// Start playback.
 audioPlayer.play();
-
 // Get audio duration.
-print('Duration Of Track: ${audioPlayer.getDuration()}');
-
+audioPlayer.audio.duration;
 // Change playback volume.
 audioPlayer.setVolume(0.5);
-print('Changed volume to 50%.');
-
 // Change playback position.
 audioPlayer.setPosition(Duration(seconds: 10));
-
 // Get playback position.
-print('Position of playback after skipping 10 seconds: ${audioPlayer.getPosition()}');
-
+audioPlayer.audio.position;
 Timer(Duration(seconds: 10), () {
-    // Pause the playback.
+    // Pause playback.
     audioPlayer.pause();
-    print('Playback of audio stopped after 10 seconds.');
 }
-```
-#### Playing an audio wave or noise
-```dart
-// New player for wave
-AudioPlayer wavePlayer = new AudioPlayer(id: 1);
+// Few other things.
+audioPlayer.audio.file;
+audioPlayer.audio.isPlaying;
+audioPlayer.audio.isCompleted;
+audioPlayer.audio.isStopped;
 
-// Load wave
-wavePlayer.loadWave(amplitude, frequency, type)
-
-// Set frequency
-wavePlayer.setWaveFrequency(frequency);
-
-// Set amplitude
-wavePlayer.setWaveAmplitude(amplitude);
-
-// Set sample rate
-wavePlayer.setWaveSampleRate(sampleRate)
-
-// Set wave type
-wavePlayer.setWaveType(type)
-
-// New player for noise
-AudioPlayer noisePlayer = new AudioPlayer(id: 2);
-
-// Load noise
-noisePlayer.loadNoise(seed, amplitude, type);
-
-// Set seed
-noisePlayer.setNoiseSeed(seed);
-
-// Set amplitude
-noisePlayer.setNoiseAmplitude(amplitude);
-
-// Set noise type
-noisePlayer.setNoiseType(type)
 ```
 
-You can see [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) simple example app, if you are confused with the usage.
+See more features in [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/vnext/example/lib/main.dart) example.
 
-## :ok_hand: Contributions
+#### Linux
 
-Thanks a lot to [@MichealReed](https://github.com/MichealReed) for adding multiple player instances, along with wave & noise APIs to the project.
+![](https://github.com/alexmercerind/flutter_audio_desktop/blob/assets/linux.png?raw=true)
 
-## :heavy_check_mark: Progress
+## Support
 
-The library is supported on Microsoft Windows & Linux.
+If you want to be kind to me, then you may buy me a coffee.
 
-|Platform            |Status     |
-|--------------------|-----------|
-|Microsoft Windows   |Working    |
-|Linux               |Working    |
-|MacOS               |Not Working|
+<a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
-## :wrench: How It Works ?
+Thankyou!
 
-One word, C++. It calls native methods using dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
 
-I wrote [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/audioplayer/audioplayer.hpp) simple wrapper in C++ around his library to get this working.
+## Progress
 
-There is not any audio playback library for Flutter Desktop at the moment, so I decided to write one myself.
+|Platform            |Status                                                    |
+|--------------------|----------------------------------------------------------|
+|Linux               |Working                                                   |
+|Microsoft Windows   |Coming Soon                                               |
+|MacOS               |[Learn More](https://www.youtube.com/watch?v=dQw4w9WgXcQ) |
 
-###### :love_letter: Thanks to [David Reid](https://github.com/mackron)  for [miniaudio](https://github.com/mackron/miniaudio).
+## Workings
+
+One word, C++. It calls native methods using Dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) & [miniaudio_engine](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
+
+I made [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/vnext/audioplayer) simple implementation in C++ around his library to get this working.

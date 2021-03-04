@@ -1,6 +1,6 @@
 name: flutter_audio_desktop
 description: A simple audio playback library for Flutter Desktop. Supports MP3, FLAC & WAV on Windows & Linux.
-version: 0.0.8
+version: 0.0.9
 homepage: https://github.com/alexmercerind/flutter_audio_desktop
 repository: https://github.com/alexmercerind/flutter_audio_desktop
 documentation: https://github.com/alexmercerind/flutter_audio_desktop/blob/master/README.md
@@ -12,6 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  path: ^1.7.0
+  path_provider: ^2.0.0
 
 dev_dependencies:
   flutter_test:

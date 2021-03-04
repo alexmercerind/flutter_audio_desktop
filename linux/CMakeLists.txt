@@ -17,8 +17,6 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
 )
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter)
 target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
-
-# List of absolute paths to libraries that should be bundled with the plugin
 set(flutter_audio_desktop_bundled_libraries
   ""
   PARENT_SCOPE

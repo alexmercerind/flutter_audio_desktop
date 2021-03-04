@@ -23,4 +23,4 @@ FLUTTER_PLUGIN_EXPORT void flutter_audio_desktop_plugin_register_with_registrar(
 
 G_END_DECLS
 
-#endif  // FLUTTER_PLUGIN_FLUTTER_AUDIO_DESKTOP_PLUGIN_H_
+#endif

@@ -1,571 +1,107 @@
 #include "include/flutter_audio_desktop/flutter_audio_desktop_plugin.h"
-
 #include <windows.h>
-
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
 
-#include <map>
-#include <string>
-#include <memory>
-#include "../audioplayer/audio.cpp"
-#include <sstream>
 
-namespace
-{
+#include "include/flutter_audio_desktop/flutter_types.hpp"
+#include "../audioplayer/main.cpp"
 
-  class FlutterAudioDesktopPlugin : public flutter::Plugin
-  {
-  public:
-    static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
-    FlutterAudioDesktopPlugin();
+namespace {
 
-    virtual ~FlutterAudioDesktopPlugin();
+    class FlutterAudioDesktopPlugin : public flutter::Plugin {
+        public:
+        static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
+        FlutterAudioDesktopPlugin();
+        virtual ~FlutterAudioDesktopPlugin();
 
-  private:
-    void HandleMethodCall(
-        const flutter::MethodCall<flutter::EncodableValue> &method_call,
-        std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-  };
+        private:
+        void HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &method_call, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+    };
 
-  void FlutterAudioDesktopPlugin::RegisterWithRegistrar(
-      flutter::PluginRegistrarWindows *registrar)
-  {
-    auto channel =
-        std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
-            registrar->messenger(), "flutter_audio_desktop",
-            &flutter::StandardMethodCodec::GetInstance());
-
-    auto plugin = std::make_unique<FlutterAudioDesktopPlugin>();
-
-    channel->SetMethodCallHandler(
-        [plugin_pointer = plugin.get()](const auto &call, auto result) {
-          plugin_pointer->HandleMethodCall(call, std::move(result));
+    void FlutterAudioDesktopPlugin::RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar) {
+        auto channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(registrar->messenger(), "flutter_audio_desktop", &flutter::StandardMethodCodec::GetInstance());
+        auto plugin = std::make_unique<FlutterAudioDesktopPlugin>();
+        channel->SetMethodCallHandler(
+            [plugin_pointer = plugin.get()](const auto &call, auto result) {
+            plugin_pointer->HandleMethodCall(call, std::move(result));
         });
-
-    registrar->AddPlugin(std::move(plugin));
-  }
-
-  FlutterAudioDesktopPlugin::FlutterAudioDesktopPlugin() {}
-
-  FlutterAudioDesktopPlugin::~FlutterAudioDesktopPlugin() {}
-
-  void FlutterAudioDesktopPlugin::HandleMethodCall(
-      const flutter::MethodCall<flutter::EncodableValue> &method_call,
-      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
-  {
-
-    if (method_call.method_name() == "init")
-    {
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-      // Map debug status
-      bool debug = false;
-      auto encodedDebug = arguments->find(flutter::EncodableValue("debug"));
-      if (encodedDebug != arguments->end())
-      {
-        debug = std::get<bool>(encodedDebug->second);
-      }
-
-      Audio::initPlayer(playerID, debug);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-    else if (method_call.method_name() == "getDevices")
-    {            
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-      
-      // Map Device Index
-      int count = Audio::getDeviceCount(playerID);
-      AudioDevice *devices = new AudioDevice[count + 1];
-      Audio::getDevices(playerID, devices);
-
-      auto deviceInfo = flutter::EncodableMap();
-      for (int i = 0; i < count; i++)
-      {
-        deviceInfo.insert_or_assign(flutter::EncodableValue(std::to_string(i).c_str()),
-                                    flutter::EncodableValue(devices[i].name.c_str()));
-      }
-      deviceInfo.insert_or_assign(flutter::EncodableValue("default"),
-                                  flutter::EncodableValue(devices[count].id));
-
-      result->Success(flutter::EncodableValue(deviceInfo));
-    }
-    else if (method_call.method_name() == "setDevice")
-    {
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map Device Index
-      int deviceIndex = 0;
-      auto encodedDeviceIndex = arguments->find(flutter::EncodableValue("device_index"));
-      if (encodedDeviceIndex != arguments->end())
-      {
-        deviceIndex = std::get<int>(encodedDeviceIndex->second);
-      }
-      Audio::setDevice(playerID, deviceIndex);
-
-      result->Success(flutter::EncodableValue(nullptr));
+        registrar->AddPlugin(std::move(plugin));
     }
 
-    else if (method_call.method_name() == "load")
-    {
+    FlutterAudioDesktopPlugin::FlutterAudioDesktopPlugin() {}
 
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+    FlutterAudioDesktopPlugin::~FlutterAudioDesktopPlugin() {}
 
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map File Location
-      std::string fileLocation = "";
-      auto encodedFileLocation = arguments->find(flutter::EncodableValue("file_location"));
-      if (encodedFileLocation != arguments->end())
-      {
-        fileLocation = std::get<std::string>(encodedFileLocation->second);
-      }
-      Audio::loadPlayer(playerID, fileLocation.c_str());
-
-      result->Success(flutter::EncodableValue(nullptr));
+    void FlutterAudioDesktopPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &methodCall, std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+        Method method(&methodCall, std::move(result));
+        if (method.name == "load") {
+            int id = method.getArgument<int>("id");
+            std::string filePath = method.getArgument<std::string>("filePath");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->load(filePath);
+            method.returnNull();
+        }
+        else if (method.name == "play") {
+            int id = method.getArgument<int>("id");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->play();
+            method.returnNull();
+        }
+        else if (method.name == "pause") {
+            int id = method.getArgument<int>("id");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->pause();
+            method.returnNull();
+        }
+        else if (method.name == "stop") {
+            int id = method.getArgument<int>("id");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->stop();
+            method.returnNull();
+        }
+        else if (method.name == "getPosition") {
+            int id = method.getArgument<int>("id");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            int audioPlayerPosition = audioPlayer->getPosition();
+            method.returnValue<int>(audioPlayerPosition);
+        }
+        else if (method.name == "getDuration") {
+            int id = method.getArgument<int>("id");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            int audioPlayerDuration = audioPlayer->getDuration();
+            method.returnValue<int>(audioPlayerDuration);
+        }
+        else if (method.name == "setPosition") {
+            int id = method.getArgument<int>("id");
+            int position = method.getArgument<int>("position");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->setPosition(position);
+            method.returnNull();
+        }
+        else if (method.name == "setVolume") {
+            int id = method.getArgument<int>("id");
+            float volume = method.getArgument<float>("volume");
+            AudioPlayer* audioPlayer = audioPlayers->get(id);
+            audioPlayer->setVolume(volume);
+            method.returnNull();
+        }
+        else if (method.name == "getDevices") {
+            std::map<std::string, std::string> devicesMap = AudioDevices::getAllMap();
+            method.returnValue<std::map<std::string, std::string>>(devicesMap);
+        }
+        else {
+            method.returnNotImplemented();
+        }
+        method.returnResult();
     }
+}
 
-    else if (method_call.method_name() == "play")
-    {
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
 
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-      Audio::playPlayer(playerID);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-    else if (method_call.method_name() == "pause")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      Audio::pausePlayer(playerID);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-
-    else if (method_call.method_name() == "stop")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      Audio::stopPlayer(playerID);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-
-    else if (method_call.method_name() == "getDuration")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      int playerDuration = Audio::getDuration(playerID);
-
-      result->Success(flutter::EncodableValue(playerDuration));
-    }
-
-    else if (method_call.method_name() == "getPosition")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      int playerPosition = Audio::getPosition(playerID);
-
-      result->Success(flutter::EncodableValue(playerPosition));
-    }
-
-    else if (method_call.method_name() == "setPosition")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      int duration = 0;
-      auto encodedDuration = arguments->find(flutter::EncodableValue("duration"));
-      if (encodedDuration != arguments->end())
-      {
-        duration = std::get<int>(encodedDuration->second);
-      }
-
-      Audio::setPosition(playerID, duration);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-
-    else if (method_call.method_name() == "setVolume")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map volume
-      double volume = 0;
-      auto encodedVolume = arguments->find(flutter::EncodableValue("volume"));
-      if (encodedVolume != arguments->end())
-      {
-        volume = std::get<double>(encodedVolume->second);
-      }
-      Audio::setVolume(playerID, volume);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-    //
-    //
-    //  *** WAVES ***
-    //
-    //
-    else if (method_call.method_name() == "loadWave")
-    {
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map amplitude
-      double amplitude = 0;
-      auto encodedAmplitude = arguments->find(flutter::EncodableValue("amplitude"));
-      if (encodedAmplitude != arguments->end())
-      {
-        amplitude = std::get<double>(encodedAmplitude->second);
-      }
-
-      // Map frequency
-      double frequency = 0;
-      auto encodedFrequency = arguments->find(flutter::EncodableValue("frequency"));
-      if (encodedFrequency != arguments->end())
-      {
-        frequency = std::get<double>(encodedFrequency->second);
-      }
-
-      // Map wave type
-      int waveType = 0;
-      auto encodedWaveType = arguments->find(flutter::EncodableValue("wave_type"));
-      if (encodedWaveType != arguments->end())
-      {
-        waveType = std::get<int>(encodedWaveType->second);
-      }
-
-      Audio::loadWave(playerID, amplitude, frequency, waveType);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-
-    else if (method_call.method_name() == "setWaveAmplitude")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map volume
-      double amplitude = 0;
-      auto encodedAmplitude = arguments->find(flutter::EncodableValue("amplitude"));
-      if (encodedAmplitude != arguments->end())
-      {
-        amplitude = std::get<double>(encodedAmplitude->second);
-      }
-      Audio::setWaveAmplitude(playerID, amplitude);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-    else if (method_call.method_name() == "setWaveFrequency")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map volume
-      double frequency = 0;
-      auto encodedFrequency = arguments->find(flutter::EncodableValue("frequency"));
-      if (encodedFrequency != arguments->end())
-      {
-        frequency = std::get<double>(encodedFrequency->second);
-      }
-      Audio::setWaveFrequency(playerID, frequency);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-    else if (method_call.method_name() == "setWaveSampleRate")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map volume
-      int waveSampleRate = 0;
-      auto encodedSampleRate = arguments->find(flutter::EncodableValue("sample_rate"));
-      if (encodedSampleRate != arguments->end())
-      {
-        waveSampleRate = std::get<int>(encodedSampleRate->second);
-      }
-      Audio::setWaveSampleRate(playerID, waveSampleRate);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-    else if (method_call.method_name() == "setWaveType")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map volume
-      int waveType = 0;
-      auto encodedWaveType = arguments->find(flutter::EncodableValue("wave_type"));
-      if (encodedWaveType != arguments->end())
-      {
-        waveType = std::get<int>(encodedWaveType->second);
-      }
-      Audio::setWaveType(playerID, waveType);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-    //
-    //
-    //  *** NOISE ***
-    //
-    //
-    else if (method_call.method_name() == "loadNoise")
-    {
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map seed
-      int seed = 0;
-      auto encodedSeed = arguments->find(flutter::EncodableValue("seed"));
-      if (encodedSeed != arguments->end())
-      {
-        seed = std::get<int>(encodedSeed->second);
-      }
-
-      // Map amplitude
-      double amplitude = 0;
-      auto encodedAmplitude = arguments->find(flutter::EncodableValue("amplitude"));
-      if (encodedAmplitude != arguments->end())
-      {
-        amplitude = std::get<double>(encodedAmplitude->second);
-      }
-
-      // Map noise type
-      int noiseType = 0;
-      auto encodedNoiseType = arguments->find(flutter::EncodableValue("noise_type"));
-      if (encodedNoiseType != arguments->end())
-      {
-        noiseType = std::get<int>(encodedNoiseType->second);
-      }
-
-      Audio::loadNoise(playerID, seed, amplitude, noiseType);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-
-    else if (method_call.method_name() == "setNoiseAmplitude")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map volume
-      double amplitude = 0;
-      auto encodedAmplitude = arguments->find(flutter::EncodableValue("amplitude"));
-      if (encodedAmplitude != arguments->end())
-      {
-        amplitude = std::get<double>(encodedAmplitude->second);
-      }
-      Audio::setNoiseAmplitude(playerID, amplitude);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-    else if (method_call.method_name() == "setNoiseSeed")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map seed
-      int seed = 0;
-      auto encodedSeed = arguments->find(flutter::EncodableValue("seed"));
-      if (encodedSeed != arguments->end())
-      {
-        seed = std::get<int>(encodedSeed->second);
-      }
-      Audio::setNoiseSeed(playerID, seed);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-    else if (method_call.method_name() == "setNoiseType")
-    {
-      // Get args
-      const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
-
-      // Map Player ID
-      int playerID = 0;
-      auto encodedID = arguments->find(flutter::EncodableValue("id"));
-      if (encodedID != arguments->end())
-      {
-        playerID = std::get<int>(encodedID->second);
-      }
-
-      // Map noise type
-      int noiseType = 0;
-      auto encodedNoiseType = arguments->find(flutter::EncodableValue("noise_type"));
-      if (encodedNoiseType != arguments->end())
-      {
-        noiseType = std::get<int>(encodedNoiseType->second);
-      }
-      Audio::setNoiseType(playerID, noiseType);
-
-      result->Success(flutter::EncodableValue(nullptr));
-    }
-
-    else
-    {
-      result->NotImplemented();
-    }
-  }
-
-} // namespace
-
-void FlutterAudioDesktopPluginRegisterWithRegistrar(
-    FlutterDesktopPluginRegistrarRef registrar)
-{
-  FlutterAudioDesktopPlugin::RegisterWithRegistrar(
-      flutter::PluginRegistrarManager::GetInstance()
-          ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
+void FlutterAudioDesktopPluginRegisterWithRegistrar(FlutterDesktopPluginRegistrarRef registrar) {
+    FlutterAudioDesktopPlugin::RegisterWithRegistrar(
+        flutter::PluginRegistrarManager::GetInstance()->GetRegistrar<flutter::PluginRegistrarWindows>(registrar)
+    );
 }
