@@ -53,19 +53,21 @@ audioPlayer.audio.isStopped;
 
 ```
 
-See more features in [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) example.
+Other classes & methods are documented in their docstrings very well.
+
+See [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/example/lib/main.dart) example for a better overview.
 
 #### Windows
 
-<img src="https://github.com/alexmercerind/flutter_audio_desktop/blob/assets/windows.png?raw=true" height="600"></img>
+<img src="https://github.com/alexmercerind/flutter_audio_desktop/blob/assets/windows.png?raw=true" width="500"></img>
 
 #### Linux
 
-<img src="https://github.com/alexmercerind/flutter_audio_desktop/blob/assets/linux.png?raw=true" height="600"></img>
+<img src="https://github.com/alexmercerind/flutter_audio_desktop/blob/assets/linux.png?raw=true" width="500"></img>
 
 ## Support
 
-If you want to be kind to me, then you may buy me a coffee.
+If you want to be kind to me, then consider buying me a coffee.
 
 <a href="https://www.buymeacoffee.com/alexmercerind"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=alexmercerind&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
@@ -80,12 +82,17 @@ Thankyou!
 |Microsoft Windows   |Working                                                   |
 |MacOS               |[Learn More](https://www.youtube.com/watch?v=dQw4w9WgXcQ) |
 
-## Workings
 
-One word, C++. It calls native methods using Dart's MethodChannel. It uses [miniaudio](https://github.com/mackron/miniaudio) & [miniaudio_engine](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron). 
+## License
 
-I made [this](https://github.com/alexmercerind/flutter_audio_desktop/blob/master/audioplayer) simple implementation in C++ around his library to get this working.
+I don't want to put any restrictions on how you distribute your Flutter Desktop apps, so this library comes under very permissive software, MIT license.
+
+Since, other libraries like [libvlcpp](https://github.com/videolan/libvlcpp) or [libvlc](https://www.videolan.org/vlc/libvlc.html) come under GPL & LGPL licenses respectively, so there will be many restrictions if I plan to use them.
+
+Thus, this project uses [miniaudio](https://github.com/mackron/miniaudio) and [miniaudio_engine](https://github.com/mackron/miniaudio) and [David Reid](https://github.com/mackron) under MIT license.
+
 
 ## Acknowledgments
 
+- [David Reid](https://github.com/mackron) for his amazing single header libraries [miniaudio](https://github.com/mackron/miniaudio) and [miniaudio_engine](https://github.com/mackron/miniaudio).
 - Thanks to [MichealReed](https://github.com/MichealReed) for his support to the project.
