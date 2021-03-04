@@ -67,7 +67,7 @@ class AudioPlayerInternal {
 
 class AudioPlayer: protected AudioPlayerInternal {
     public:
-    AudioPlayer(AudioDevice* audioDevice = nullptr) {
+    AudioPlayer(AudioDevice* audioDevice) {
         this->preferredAudioDevice = audioDevice;
     };
 

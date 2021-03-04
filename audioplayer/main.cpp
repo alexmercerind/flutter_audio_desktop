@@ -6,14 +6,29 @@
 
 class AudioPlayers {
     public:
-    std::map<int, AudioPlayer*> audioPlayers;
+    AudioPlayers() {
+        this->audioDevices = AudioDevices::getAll();
+    }
 
-    AudioPlayer* get(int id) {
+    AudioPlayer* get(int id, std::string deviceId = "default") {
         if (this->audioPlayers.find(id) == this->audioPlayers.end()) {
-            this->audioPlayers[id] = new AudioPlayer();
+            AudioDevice* preferredAudioDevice = nullptr;
+            if (deviceId != "default") {
+                for (AudioDevice* audioDevice: this->audioDevices) {
+                    if (std::to_string(audioDevice->id) == deviceId) {
+                        preferredAudioDevice = audioDevice;
+                        break;
+                    };
+                }
+            }
+            this->audioPlayers[id] = new AudioPlayer(preferredAudioDevice);
         }
         return this->audioPlayers[id];
     }
+
+    private:
+    std::map<int, AudioPlayer*> audioPlayers;
+    std::vector<AudioDevice*> audioDevices;
 };
 
 
