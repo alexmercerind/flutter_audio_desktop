@@ -89,7 +89,7 @@ I don't want to put any restrictions on how you distribute your Flutter Desktop 
 
 Since, other libraries like [libvlcpp](https://github.com/videolan/libvlcpp) or [libvlc](https://www.videolan.org/vlc/libvlc.html) come under GPL & LGPL licenses respectively, so there will be many restrictions if I plan to use them.
 
-Thus, this project uses [miniaudio](https://github.com/mackron/miniaudio) and [miniaudio_engine](https://github.com/mackron/miniaudio) and [David Reid](https://github.com/mackron) under MIT license.
+Thus, this project uses [miniaudio](https://github.com/mackron/miniaudio) and [miniaudio_engine](https://github.com/mackron/miniaudio) from [David Reid](https://github.com/mackron) under MIT license.
 
 
 ## Acknowledgments
