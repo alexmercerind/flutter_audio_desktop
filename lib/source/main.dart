@@ -53,7 +53,7 @@ class AudioPlayer extends AudioPlayerEvents {
   ///
   /// ```dart
   /// audioPlayer.load(
-  ///   AudioSource.fromFile(
+  ///   await AudioSource.fromFile(
   ///     new File(filePath),
   ///   ),
   /// );
@@ -63,7 +63,7 @@ class AudioPlayer extends AudioPlayerEvents {
   ///
   /// ```dart
   /// audioPlayer.load(
-  ///   AudioSource.fromAsset(
+  ///   await AudioSource.fromAsset(
   ///     'assets/audio.MP3',
   ///   ),
   /// );
