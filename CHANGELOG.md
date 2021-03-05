@@ -1,4 +1,4 @@
-## 0.0.9
+## 0.1.0
 
 - Now you can listen to playback events using `stream` (a broadcast stream) inside `AudioPlayer`. This was a great problem in earlier version as one always needs to trigger UI updates whenever playback progresses, ends etc.
 - One of the big problems in earlier version was that there was no way to detect if an audio playback has ended after completion. Resulting in issues like #25 & #26. Now `audio.isCompleted` stores `bool` if an audio has ended, same can be accessed from `stream`.
@@ -25,7 +25,11 @@
 - Now device handling is present in an entirely separate class `AudioDevices`.
 - Improvements to how methods are identified & called in method channel. `flutter_types.hpp` improves code readability. 
 - Other bugs that randomly caused termination after false assertions are also fixed to an extent.
-- Removed wave & noise APIs temporarily. Apologies to everyone & [MichealReed](https;//github.com/MichealReed).
+- Removed wave & noise APIs temporarily. Apologies to everyone & [MichealReed](https://github.com/MichealReed).
+
+## 0.0.9
+
+- Missed
 
 ## 0.0.8
 

@@ -12,7 +12,7 @@ Mention in your pubspec.yaml:
 ```yaml
 dependencies:
   ...
-  flutter_audio_desktop: ^0.0.9
+  flutter_audio_desktop: ^0.1.0
 ```
 
 ## Using
