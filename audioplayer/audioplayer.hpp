@@ -116,7 +116,7 @@ class AudioPlayer: protected AudioPlayerInternal {
 
     int getDuration() {
         if (this->isLoaded) {
-            unsigned __int64 durationPCMFrame;
+            unsigned long long durationPCMFrame;
             ma_resource_manager_data_source_get_length_in_pcm_frames(
                 &this->dataSource,
                 &durationPCMFrame
@@ -131,8 +131,8 @@ class AudioPlayer: protected AudioPlayerInternal {
     }
 
     int getPosition() {
-        if (this->isLoaded) {
-            unsigned __int64 positionPCMFrame;
+        if (this->isLoaded) {w
+            unsigned long long positionPCMFrame;
             ma_resource_manager_data_source_get_cursor_in_pcm_frames(
                 &this->dataSource,
                 &positionPCMFrame
