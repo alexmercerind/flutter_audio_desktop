@@ -131,7 +131,7 @@ class AudioPlayer: protected AudioPlayerInternal {
     }
 
     int getPosition() {
-        if (this->isLoaded) {w
+        if (this->isLoaded) {
             unsigned long long positionPCMFrame;
             ma_resource_manager_data_source_get_cursor_in_pcm_frames(
                 &this->dataSource,
