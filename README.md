@@ -1,5 +1,12 @@
-# [flutter_audio_desktop](https://github.com/alexmercerind/flutter_audio_desktop)
-
+# ✒ [dart_vlc](https://github.com/alexmercerind/dart_vlc) is sequel to this project.
+#### It provides better playback, format support, control & features.
+<br></br>
+<br></br>
+<br></br>
+<br></br>
+<br></br>
+<br></br>
+<br></br>
 #### An audio playback library for Flutter Desktop.
 
 Feel free to open issue anytime.
