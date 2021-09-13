@@ -1,5 +1,5 @@
-# ✒ [dart_vlc](https://github.com/alexmercerind/dart_vlc) is sequel to this project.
-#### It provides better playback, format support, control & features.
+# ✒ [libwinmedia](https://github.com/harmonoid/libwinmedia) is sequel to this project.
+#### It provides network playback, better format support, control & features.
 <br></br>
 <br></br>
 <br></br>
